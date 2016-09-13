@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load bootstrap_ui_tags %}
+
+{% block content %}
+
+
+{% column xs="7" md="10" md_offset="6" lg="5" %}
+
+<div align="center">
+	<form method="post" action="{% url 'login' %}" class="form-signin">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	
+	{% buttons %}
+	  <button type="submit" class="btn btn-primary">
+	    {% trans 'Login' %}
+	  </button>
+    {% endbuttons %}
+
+	</form>
+
+{# Assumes you setup the password_reset view in your URLconf #}
+<!-- <p><a href="{% url 'password_reset' %}" id="icon">{% bootstrap_icon "question-sign" %} {% trans 'Lost password' %}?</a></p> -->
+
+</div>
+
+{% endcolumn %}
+
+{% endblock %}

@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-09-12 22:07-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: bevim/forms.py:8
+msgid "The two password fields didn't match."
+msgstr "As senhas não são iguais."
+
+#: bevim/forms.py:10
+msgid "Password"
+msgstr "Senha"
+
+#: bevim/forms.py:12
+msgid "Password confirmation"
+msgstr "Confirmação de Senha"
+
+#: bevim/forms.py:14
+msgid "Enter the same password as above, for verification."
+msgstr "Digite a mesma senha de cima, para verificação"
+
+#: bevim/templates/base.html:32 bevim/templates/login.html:18
+msgid "Login"
+msgstr "Entrar"
+
+#: bevim/templates/base.html:40
+msgid "Logout"
+msgstr "Sair"
+
+#: bevim/templates/home.html:19
+msgid "Register"
+msgstr "Cadastrar"
+
+#: bevim/templates/login.html:25
+msgid "Lost password"
+msgstr "Esqueceu a senha"
+
+#: bevim/views.py:32
+msgid "Successfully registered!"
+msgstr "Cadastrado com sucesso!"
+
+#: bevim/views.py:36
+msgid "Could not perform the registration! Try again."
+msgstr "Não foi possível realizar o cadastro! Tente novamente."
