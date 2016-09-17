@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load bootstrap_ui_tags %}
+
+{% block content %}
+
+
+
+{% column lg="8"%}
+	<form method="post" action="{% url 'new_experiment' %}">
+		{% csrf_token %}
+		
+
+		{% column lg="4"%}
+
+			<b>{% trans 'Frequency'%}</b>
+
+		{% endcolumn %}
+
+		{% column lg="4"%}
+
+			<b>{% trans 'Job Time'%}</b>
+
+		{% endcolumn %}
+
+		{% column lg="4"%}
+
+			{% buttons %}
+				<center>
+			  		<button type="submit" class="btn btn-primary">
+				    	{% trans 'Start Experiment' %}
+				  	</button>
+				</center>
+
+			{% endbuttons %}
+
+
+		{% endcolumn %}
+
+
+		{% column lg="8"%}
+
+			{{ formset.management_form }}
+			<div id="form_set">
+
+			    {% for form in formset.forms %}
+			        <table class='no_error'>
+			            <tr>
+			            	{% bootstrap_form form layout='horizontal' show_label=False%}
+			            </tr>
+			        </table>
+
+			    {% endfor %}
+			</div>
+			<div id="empty_form" style="display:none">
+			    <table class='no_error'>
+			    	<tr>
+			        {% bootstrap_form formset.empty_form layout='horizontal' show_label=False%}
+			        </tr>
+			    </table>
+
+			</div>
+				
+
+
+			{% column lg="2"%}
+				<input type="button" value="Add Another Job" id="add_more" class="btn btn-success">
+
+			{% endcolumn %}
+
+		{% endcolumn %}
+
+	</form>
+{% endcolumn %}
+
+
+{% endblock %}

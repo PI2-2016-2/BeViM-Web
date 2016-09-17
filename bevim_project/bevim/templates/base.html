@@ -12,7 +12,7 @@
     <script src="{% static "js/jquery-1.11.1.js" %}"></script>
     <script src="{% static "js/rango-jquery.js" %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="{% static "js/ido.js" %}"></script>
+    <script src="{% static "js/experiment.js" %}"></script>
     
     <nav class="navbar navbar-default navbar-fixed-top">
 	  <div class="container">
@@ -24,6 +24,9 @@
             <ul class="nav navbar-nav">
             {% if not user.is_authenticated %}
         	{% else %}
+            <li>
+                <a href="{% url 'new_experiment'%}">{% trans 'New Experiment' %}</a>
+            </li>
             {%endif%}
             </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -64,9 +67,9 @@
                   <span id="alert-message"></span>
                 </div>
                 {% endblock %}
+                </div>
                 {% block content %}
                 {% endblock %}
-                </div>
             </div>
         </div>
 

@@ -134,6 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/static'
 
 DJANGO_BOOTSTRAP_UI_THEME = 'bootswatch-cosmo'
 
@@ -144,4 +145,9 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+BOOTSTRAP3 = {
+    'horizontal_label_class': 'col-md-3',
+    'horizontal_field_class': 'col-md-5',
+}
 

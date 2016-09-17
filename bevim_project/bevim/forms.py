@@ -1,6 +1,10 @@
 from django import forms
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.forms import formset_factory
+
+from bevim.models import Experiment, Job
+
 
 class UserForm(forms.ModelForm):
    
@@ -41,3 +45,12 @@ class UserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class JobForm(forms.ModelForm):
+
+    class Meta:
+        model = Job
+        fields = ('choose_frequency', 'job_time')
+
+JobFormSet = formset_factory(JobForm)

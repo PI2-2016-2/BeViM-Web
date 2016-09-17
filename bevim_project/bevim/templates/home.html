@@ -6,7 +6,7 @@
 
 {% block content %}
 
-{% column lg="6" md_offset="5"%}
+{% column lg="6" md_offset="3"%}
 {% if not user.is_authenticated %}
 	<form method="post" action="{% url 'register' %}" class="form-signup">
 	{% csrf_token %}
