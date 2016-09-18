@@ -24,7 +24,7 @@ It is a web application created for an mechanical vibration test equipment.  The
 
 * Install dependencies
     
-        pip install -r path/to/repository/requirements.txt
+        pip install -r path-to-repository/requirements.txt
     
 
 ### Running the app
