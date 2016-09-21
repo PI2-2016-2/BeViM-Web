@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-17 19:59+0000\n"
+"POT-Creation-Date: 2016-09-21 01:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,36 +31,28 @@ msgid "Password confirmation"
 msgstr "Confirmação de Senha"
 
 #: bevim/forms.py:18
-msgid "Enter the same password as above, for verification."
+#, fuzzy
+#| msgid "Enter the same password as above, for verification."
+msgid "Enter the same password as above for verification."
 msgstr "Digite a mesma senha de cima, para verificação"
 
 #: bevim/templates/base.html:28
 msgid "New Experiment"
 msgstr "Novo Ensaio"
 
-#: bevim/templates/base.html:35 bevim/templates/login.html:18
+#: bevim/templates/base.html:31
+#, fuzzy
+#| msgid "New Experiment"
+msgid "Experiments"
+msgstr "Novo Ensaio"
+
+#: bevim/templates/base.html:38 bevim/templates/login.html:18
 msgid "Login"
 msgstr "Entrar"
 
-#: bevim/templates/base.html:43
+#: bevim/templates/base.html:46
 msgid "Logout"
 msgstr "Sair"
-
-#: bevim/templates/experiment.html:17
-msgid "Frequency"
-msgstr "Frequência"
-
-#: bevim/templates/experiment.html:23
-msgid "Job Time"
-msgstr "Tempo"
-
-#: bevim/templates/experiment.html:32
-msgid "Start Experiment"
-msgstr "Iniciar Ensaio"
-
-#: bevim/templates/experiment.html:68
-msgid "Add Another Job"
-msgstr "Adicionar outra frequência"
 
 #: bevim/templates/home.html:19
 msgid "Register"
@@ -70,10 +62,32 @@ msgstr "Cadastrar"
 msgid "Lost password"
 msgstr "Esqueceu a senha"
 
-#: bevim/views.py:33
+#: bevim/templates/new_experiment.html:17
+msgid "Frequency"
+msgstr "Frequência"
+
+#: bevim/templates/new_experiment.html:23
+msgid "Job Time"
+msgstr "Tempo"
+
+#: bevim/templates/new_experiment.html:36
+msgid "Start Experiment"
+msgstr "Iniciar Ensaio"
+
+#: bevim/templates/new_experiment.html:72
+msgid "Add Another Job"
+msgstr "Adicionar outra frequência"
+
+#: bevim/views.py:38
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:37
+#: bevim/views.py:46
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
+
+#: bevim/views.py:137
+msgid ""
+"It is not possible start an experiment without one frequency and one time. "
+"Please fill the fields."
+msgstr "Não é possível iniciar um ensaio sem uma frequência e um tempo. Por favor, preencha os campos."

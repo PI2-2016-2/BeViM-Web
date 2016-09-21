@@ -28,9 +28,13 @@
 
 			{% buttons %}
 				<center>
-			  		<button type="submit" class="btn btn-primary">
-				    	{% trans 'Start Experiment' %}
-				  	</button>
+			  		{% if not busy_equipment %}
+			  			<button type="submit" class="btn btn-primary">
+			  		{% else %}
+			  			<button type="submit" class="btn btn-primary" disabled="true">
+				  	{% endif %}
+				    		{% trans 'Start Experiment' %}
+				  		</button>
 				</center>
 
 			{% endbuttons %}
