@@ -8,6 +8,6 @@ urlpatterns = [
     url(r'^new_experiment$', views.ExperimentView.as_view(),
         name='new_experiment'),
 
-    url(r'^experiments$', views.ExperimentView.as_view(),
+    url(r'^experiments$', views.ExperimentView().show_experiments,
         name='experiments'),
 ]

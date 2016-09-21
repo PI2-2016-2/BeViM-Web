@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load bootstrap_ui_tags %}
+
+{% block content %}
+
+{% column md="8" md_offset="2" %}
+
+<h2 class="text-center"> <b>Ensaios Realizados</b> </h2>
+
+<br>
+
+	<div class="table-responsive no-padding">
+		<table class="table table-hover">
+			<tr>
+			  <th>Número do Ensaio</th>
+			  <th>Data do Ensaio</th>
+			  <th></th>
+			</tr>
+			{% for experiment in experiments%}
+			<tr>
+			  <td><h4>{{experiment.number}}</h4></td>
+			  <td><h4>{{experiment.date}}</h4></td>
+			  <td><a href="/">
+
+				{% buttons %}
+				  <button type="submit" class="btn btn-primary">
+			  		<i class="fa fa-line-chart" aria-hidden="true"></i>
+				  	Ver resultado
+					
+				  </button>
+				{% endbuttons %}
+			  </a></td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</center>
+
+
+{% endcolumn %}
+
+{% endblock %}
