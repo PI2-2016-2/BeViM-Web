@@ -1,0 +1,55 @@
+<html>
+<head>
+	<title>Teste Cronômetro</title>
+	<meta charset="UTF-8">
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<h1> Tempo Experimento: </h1><h1 id="experimentTime"></h1>
+	<br>
+	<h1> Hora Inicial: </h1><h1 id="initialTime"></h1>
+	<br>
+	<h1> Hora Atual: </h1><h1 id="elapsedTime"></h1>
+	<br>
+	<h1> Hora Final: </h1><h1 id="finalTime"></h1>
+
+   <script>
+   		var dataObject = new Date();
+   		var hours = dataObject.getHours();
+   		var minutes = dataObject.getMinutes();
+   		var seconds = dataObject.getSeconds();
+
+   		var initialTime = document.getElementById("initialTime");
+   		initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
+
+   		var time = 5;
+   		var experimentTime = document.getElementById("experimentTime");
+   		experimentTime.innerHTML = time + " segundos";
+
+		function updateElapsedTime() {
+			var elapsedTime = document.getElementById("elapsedTime");
+
+			var dateElapsed = new Date();
+
+			elapsedTime.innerHTML =  dateElapsed.getHours() + ":" + dateElapsed.getMinutes()+ ":" + dateElapsed.getSeconds();
+		}
+
+		var timer = setInterval(updateElapsedTime, 500);
+
+		function stopUpdate() {
+			clearInterval(timer);
+
+			var finalTime = document.getElementById("finalTime");
+			var finalDate = new Date();
+			finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
+		}
+
+		setTimeout(stopUpdate, 5000);
+	</script>
+</body>
+</html>
