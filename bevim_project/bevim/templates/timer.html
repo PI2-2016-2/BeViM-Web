@@ -1,35 +1,86 @@
-<html>
-<head>
-	<title>Teste Cronômetro</title>
-	<meta charset="UTF-8">
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% load bootstrap_ui_tags %}
 
-	<style>
-		body {
-			font-family: sans-serif;
-		}
-	</style>
-</head>
-<body>
-	<h1> Tempo Experimento: </h1><h1 id="experimentTime"></h1>
-	<br>
-	<h1> Hora Inicial: </h1><h1 id="initialTime"></h1>
-	<br>
-	<h1> Hora Atual: </h1><h1 id="elapsedTime"></h1>
-	<br>
-	<h1> Hora Final: </h1><h1 id="finalTime"></h1>
+{% block content %}
 
-   <script>
-   		var dataObject = new Date();
-   		var hours = dataObject.getHours();
-   		var minutes = dataObject.getMinutes();
-   		var seconds = dataObject.getSeconds();
+	<div class="time" id="total_time" style="display: none;">
+    	{{ total_time }}
+	</div>
 
-   		var initialTime = document.getElementById("initialTime");
-   		initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
+	<div class="row" style="margin-top: 10%;">
+		<div class="row">
+		</div>
 
-   		var time = 5;
-   		var experimentTime = document.getElementById("experimentTime");
-   		experimentTime.innerHTML = time + " segundos";
+		<div class="col-md-4">
+		</div>
+		<div class="col-md-4">
+
+			<div class="panel panel-primary">
+	            <div class="panel-heading">
+					<h2 class="panel-title"><b>Tempo do Ensaio</b></h2>
+				    <br>
+	                <div class="row">
+	                    <div class="col-xs-3">
+	                        <span style="font-size:5em;" class="glyphicon glyphicon-time"></span>
+	                    </div>
+	                    <div class="col-xs-9 text-right">
+	                        <div class="huge"><h1 id="experimentTime"></h1></div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+        </div>
+		<div class="col-md-4">
+		</div>
+	</div>
+	
+	<div class="row">	
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+		            <div class="panel-heading">
+					    <h2 class="panel-title"><b>Hora Inicial</b></h2>
+		            </div>
+                        <div class="huge text-center">
+    						<h1 id="initialTime"></h1>
+                        </div>
+		        </div>
+		  	</div>
+		<div class="col-md-4">
+
+			    <div class="panel panel-primary">
+	            <div class="panel-heading">
+				    <h2 class="panel-title"><b>Hora Atual</b></h2>
+	            </div>
+	                <div class="huge text-center">
+	                	<h1 id="elapsedTime"></h1>
+	                </div>
+	        </div>
+	    </div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+	            <div class="panel-heading">
+				    <h2 class="panel-title"><b>Hora Final</b></h2>
+	            </div>
+                    <div class="huge text-center">
+						<h1 id="finalTime"></h1>
+                    </div>
+	        </div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var dataObject = new Date();
+    	var hours = dataObject.getHours();
+    	var minutes = dataObject.getMinutes();
+    	var seconds = dataObject.getSeconds();
+ 
+    	var initialTime = document.getElementById("initialTime");
+    	initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
+ 
+    	var time = document.querySelector(".time").textContent;
+    	var experimentTime = document.getElementById("experimentTime");
+ 		experimentTime.innerHTML = time + " segundos";
 
 		function updateElapsedTime() {
 			var elapsedTime = document.getElementById("elapsedTime");
@@ -49,7 +100,8 @@
 			finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
 		}
 
-		setTimeout(stopUpdate, 5000);
+		var timeToStop = time*1000;
+
+		setTimeout(stopUpdate, timeToStop);
 	</script>
-</body>
-</html>
+{% endblock %}

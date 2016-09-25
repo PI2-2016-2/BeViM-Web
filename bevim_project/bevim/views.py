@@ -89,6 +89,25 @@ class ExperimentView(View):
 
         return response
 
+    @method_decorator(login_required)
+    def show_timer(self, request, experiment_id=None):
+
+        total_time = 0
+        
+        if experiment_id is not None: 
+            experiment = Experiment.objects.get(pk=experiment_id) 
+            jobs = experiment.job_set.all()
+        
+            for job in jobs:
+                total_time += job.job_time
+
+        context = {
+            'total_time' : total_time
+        }
+
+        return render(request, "timer.html", context)
+
+
     def create_experiment(self, user):
         user_experiments = Experiment.objects.filter(user_id=user.pk)
         if user_experiments:
@@ -124,7 +143,7 @@ class ExperimentView(View):
                     # messages.add_message(
                        # request, messages.SUCCESS,
                        #_('Successfully registered!'))
-                    response = redirect('home')
+                    response = redirect('timer', experiment_id=experiment.id)
 
                 else:
                     raise IntegrityError

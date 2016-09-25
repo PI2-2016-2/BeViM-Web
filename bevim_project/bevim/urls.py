@@ -10,4 +10,7 @@ urlpatterns = [
 
     url(r'^experiments$', views.ExperimentView.as_view(),
         name='experiments'),
+
+    url(r'^experiment/(?P<experiment_id>\d+)$', views.ExperimentView().show_timer,
+        name='timer'),
 ]

@@ -6,3 +6,5 @@ $(document).ready(function() {
       $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
   });
 })
+
+
