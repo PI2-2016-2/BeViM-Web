@@ -5,8 +5,10 @@ from django.core.validators import MaxValueValidator
 
 class Experiment(models.Model):
     number = models.PositiveSmallIntegerField()
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    active = models.BooleanField()
+    initial_time = models.TimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.number)

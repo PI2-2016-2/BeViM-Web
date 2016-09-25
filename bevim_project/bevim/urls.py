@@ -13,4 +13,6 @@ urlpatterns = [
 
     url(r'^experiment/(?P<experiment_id>\d+)$', views.ExperimentView().show_timer,
         name='timer'),
+
+    url(r'^free_equipment/(?P<experiment_id>\d+)$', views.free_equipment, name='free_equipment'),
 ]

@@ -14,6 +14,18 @@ from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job
 
 
+def free_equipment(request, experiment_id):
+
+    if experiment_id:
+        experiment = Experiment.objects.get(pk=experiment_id)
+        experiment.active = False
+        experiment.save()
+
+    else:
+        return HttpResponseBadRequest()
+
+    return HttpResponse(status=201)
+
 class HomeView(View):
 
     http_method_names = [u'post', u'get']
@@ -66,9 +78,16 @@ class ExperimentView(View):
 
     @method_decorator(login_required)
     def get(self, request):
-        # Checking if has a logged user
-        #...
-        busy_equipment = False
+        # Checking if has a user using the equipment
+        active_experiment = Experiment.objects.filter(active=True)
+        if active_experiment:
+            busy_equipment = True
+            messages.add_message(
+                request,
+                messages.ERROR,
+                _('The equipment is in use by another user.'))
+        else:
+            busy_equipment = False
         self.context['busy_equipment'] = busy_equipment
         return render(request, self.template, self.context)
 
@@ -102,7 +121,8 @@ class ExperimentView(View):
                 total_time += job.job_time
 
         context = {
-            'total_time' : total_time
+            'total_time' : total_time,
+            'experiment_id': experiment_id
         }
 
         return render(request, "timer.html", context)
@@ -117,9 +137,9 @@ class ExperimentView(View):
         else:
             number = "{0:0>5}".format(1)
 
-        experiment_date = date.today()
         experiment = Experiment(number=number,
-                                date=experiment_date, user_id=user.pk)
+                                user_id=user.pk,
+                                active = True)
         experiment.save()
 
         return experiment

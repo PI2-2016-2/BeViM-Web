@@ -68,6 +68,10 @@
                     </div>
 	        </div>
 		</div>
+		{% csrf_token %}
+		<div id="urlaccess" style="display: none;">
+        	{% url 'free_equipment' experiment_id%}
+	    </div>
 	</div>
 	<script type="text/javascript">
 		var dataObject = new Date();
@@ -98,8 +102,24 @@
 			var finalTime = document.getElementById("finalTime");
 			var finalDate = new Date();
 			finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
+
+			freeEquipment();
 		}
 
+		function freeEquipment(){
+		  	var url_post = $( "#urlaccess" ).html()
+			$.ajax({
+				type:"POST",
+				url: url_post,
+				data: {},
+			    beforeSend: function(xhr, settings) {
+					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+		        	xhr.setRequestHeader("X-CSRFToken", token);
+		      	},
+				success: function(){
+				}
+			});
+		}
 		var timeToStop = time*1000;
 
 		setTimeout(stopUpdate, timeToStop);
