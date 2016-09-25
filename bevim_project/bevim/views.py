@@ -9,9 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 
 from datetime import date
+import requests as api_requests
+import json 
 
 from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job
+from bevim import tasks
 
 
 def free_equipment(request, experiment_id):
@@ -97,6 +100,12 @@ class ExperimentView(View):
         try:
             formset = self.formset(request.POST)
             if formset.is_valid():
+                url_to_rest = 'http://127.0.0.1:8002/api/v1/frequency'
+                headers = {'content-type': 'application/json'}
+                payload = {'value': '-2'} # Flag to start experiment
+                start_experiment = api_requests.post(url_to_rest,data=json.dumps(payload), 
+                                headers=headers)
+                tasks.get_sensors()
                 response = self.get_data_from_jobs(formset, request)
 
             else:
