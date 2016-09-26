@@ -7,11 +7,11 @@ from django.forms import formset_factory
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
-
 from datetime import date
 import requests as api_requests
 import json 
 
+from bevim_project.settings import REST_BASE_URL
 from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job
 from bevim import tasks
@@ -100,14 +100,12 @@ class ExperimentView(View):
         try:
             formset = self.formset(request.POST)
             if formset.is_valid():
-                url_to_rest = 'http://127.0.0.1:8002/api/v1/frequency'
+                url_to_rest = REST_BASE_URL + 'v1/sensor'
                 headers = {'content-type': 'application/json'}
                 payload = {'value': '-2'} # Flag to start experiment
                 start_experiment = api_requests.post(url_to_rest,data=json.dumps(payload), 
                                 headers=headers)
-                tasks.get_sensors()
                 response = self.get_data_from_jobs(formset, request)
-
             else:
                 self.context['formset'] = formset
                 response = render(request, self.template, self.context)
@@ -131,7 +129,7 @@ class ExperimentView(View):
 
         context = {
             'total_time' : total_time,
-            'experiment_id': experiment_id
+            'experiment_id': experiment_id,
         }
 
         return render(request, "timer.html", context)
@@ -168,10 +166,7 @@ class ExperimentView(View):
                             empty_job += 1
 
                 if empty_job != len(formset.cleaned_data):
-                    # Início do experimento aqui
-                    # messages.add_message(
-                       # request, messages.SUCCESS,
-                       #_('Successfully registered!'))
+                    tasks.get_sensors()
                     response = redirect('timer', experiment_id=experiment.id)
 
                 else:
