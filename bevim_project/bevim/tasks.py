@@ -12,3 +12,4 @@ def get_sensors():
 
     if data:
     	time.cancel()
+    	print (data)

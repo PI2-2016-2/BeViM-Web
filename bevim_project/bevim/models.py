@@ -34,8 +34,10 @@ class Sensor(models.Model):
                 'Use alphanumeric characters and underscore only'
             )
         ],
-        blank=False
+        blank=False,
+        unique=True
     )
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -47,6 +49,7 @@ class Data(models.Model):
     y_value = models.DecimalField(max_digits=4, decimal_places=2)
     z_value = models.DecimalField(max_digits=4, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
 
 class Acceleration(Data):

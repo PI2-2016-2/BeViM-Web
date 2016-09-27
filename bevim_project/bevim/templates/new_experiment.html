@@ -5,78 +5,103 @@
 
 {% block content %}
 
-
-
 {% column lg="8"%}
-	<form method="post" action="{% url 'new_experiment' %}">
-		{% csrf_token %}
-		
+    <form id="new_experiment_form" method="post" action="{% url 'new_experiment' %}">
+        {% csrf_token %}
 
-		{% column lg="4"%}
+        {% column lg="4"%} <b>{% trans 'Frequency'%}</b> {% endcolumn %}
 
-			<b>{% trans 'Frequency'%}</b>
+        {% column lg="4"%} <b>{% trans 'Job Time'%} </b> {% endcolumn %}
 
-		{% endcolumn %}
+        {% column lg="4"%}
 
-		{% column lg="4"%}
+            {% buttons %}
+                <center>
+                    {% if not busy_equipment %}
+                        <button id="start_experiment" type="submit" class="btn btn-primary">
+                    {% else %}
+                        <button id="start_experiment" type="submit" class="btn btn-primary" disabled="true">
+                    {% endif %}
+                            {% trans 'Start Experiment' %}
+                        </button>
+                </center>
 
-			<b>{% trans 'Job Time'%}</b>
-
-		{% endcolumn %}
-
-		{% column lg="4"%}
-
-			{% buttons %}
-				<center>
-			  		{% if not busy_equipment %}
-			  			<button type="submit" class="btn btn-primary">
-			  		{% else %}
-			  			<button type="submit" class="btn btn-primary" disabled="true">
-				  	{% endif %}
-				    		{% trans 'Start Experiment' %}
-				  		</button>
-				</center>
-
-			{% endbuttons %}
+            {% endbuttons %}
 
 
-		{% endcolumn %}
+        {% endcolumn %}
 
 
-		{% column lg="8"%}
+        {% column lg="8"%}
 
-			{{ formset.management_form }}
-			<div id="form_set">
+            {{ formset.management_form }}
+            <div id="form_set">
 
-			    {% for form in formset.forms %}
-			        <table class='no_error'>
-			            <tr>
-			            	{% bootstrap_form form layout='horizontal' show_label=False%}
-			            </tr>
-			        </table>
+                {% for form in formset.forms %}
+                    <table class='no_error'>
+                        <tr>
+                            {% bootstrap_form form layout='horizontal' show_label=False%}
+                        </tr>
+                    </table>
 
-			    {% endfor %}
-			</div>
-			<div id="empty_form" style="display:none">
-			    <table class='no_error'>
-			    	<tr>
-			        {% bootstrap_form formset.empty_form layout='horizontal' show_label=False%}
-			        </tr>
-			    </table>
+                {% endfor %}
+            </div>
+            <div id="empty_form" style="display:none">
+                <table class='no_error'>
+                    <tr>
+                    {% bootstrap_form formset.empty_form layout='horizontal' show_label=False%}
+                    </tr>
+                </table>
 
-			</div>
-				
+            </div>
 
+            {% column lg="2"%}
+                <input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-success">
 
-			{% column lg="2"%}
-				<input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-success">
+            {% endcolumn %}
 
-			{% endcolumn %}
+        {% endcolumn %}
 
-		{% endcolumn %}
+    </form>
 
-	</form>
 {% endcolumn %}
+    
+    <div id="load_sensors_url" style="display: none;">
+        {% url 'load_sensors' %}
+    </div>
+    
+    {% include "received_sensors_modal.html" with sensors=sensors %}
 
+{% endblock %}
 
+{% block body-javascript %}
+  {{ block.super }}
+    <script>
+      $(document).ready(function(){
+        $("#start_experiment").click(function(event){
+            $("#received_sensors").modal('show');
+            event.preventDefault();
+        });
+
+        $("#confirm_sensors_btn").click(function(event){
+            $("#new_experiment_form").submit();
+        });
+
+        $("#reload_sensors_btn").click(function(event){
+            var url_post = $("#load_sensors_url").html();
+            $.ajax({
+                type:"POST",
+                url: url_post,
+                data: {},
+                beforeSend: function(xhr, settings) {
+                    var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                },
+                success: function(data){
+                    $("#found_sensors_list").html(data);
+                }
+            });
+        });
+      });
+    </script>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% load bootstrap3 %}
+{% load i18n %}
+{% load bootstrap_ui_tags %}
+
+<div id="received_sensors" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="text-center modal-title">{% trans 'Received sensors' %}</h3>
+      </div>
+      <div class="modal-body text-center">
+          <h3><i class="fa fa-info"></i> <b>{% trans 'Do you confirm the sensors we found' %}?</b></h3>
+          <br>
+          <p align="left"> <strong><i class="fa fa-list-ul"></i> {% trans 'Found sensors' %}: </strong><br><br>
+            
+            <div id="found_sensors_list">
+              <!-- {% for sensor in sensors %}
+                - <b>Sensor</b>: {{ sensor.name }}<br>
+              {% endfor %} -->
+              {% include "found_sensors_list.html" with sensors=sensors %}
+            </div>
+
+          </p>
+      </div>
+      <div class="modal-footer">
+        {% row %}
+          {% column md="6" %}
+            <button id="reload_sensors_btn" class="btn btn-warning btn-md btn-block"> <i class="fa fa-refresh"></i> {% trans 'RELOAD' %} </button>
+          {% endcolumn %}
+          {% column md="6" %}
+            <button id="confirm_sensors_btn" class="btn btn-success btn-md btn-block"><i class="fa fa-check-square"></i> {% trans 'CONFIRM SENSORS' %}</button>
+          {% endcolumn %}
+        {% endrow %}
+      </div>
+    </div>
+  </div>
+</div>

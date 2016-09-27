@@ -7,13 +7,14 @@ from django.forms import formset_factory
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
+from django.template.loader import render_to_string
 from datetime import date
 import requests as api_requests
 import json 
 
 from bevim_project.settings import REST_BASE_URL
 from bevim.forms import UserForm, JobForm
-from bevim.models import Experiment, Job
+from bevim.models import Experiment, Job, Sensor
 from bevim import tasks
 
 
@@ -75,7 +76,6 @@ class ExperimentView(View):
     JobFormSet = formset_factory(JobForm)
     formset = JobFormSet
     context = {
-        'formset': formset,
         'title': "ExperimentForm"
     }
 
@@ -91,20 +91,16 @@ class ExperimentView(View):
                 _('The equipment is in use by another user.'))
         else:
             busy_equipment = False
+        self.context['formset'] = self.JobFormSet
         self.context['busy_equipment'] = busy_equipment
+        self.context['sensors'] = self.get_sensors()
         return render(request, self.template, self.context)
 
     @method_decorator(login_required)
     def post(self, request):
-
         try:
             formset = self.formset(request.POST)
             if formset.is_valid():
-                url_to_rest = REST_BASE_URL + 'v1/sensor'
-                headers = {'content-type': 'application/json'}
-                payload = {'value': '-2'} # Flag to start experiment
-                start_experiment = api_requests.post(url_to_rest,data=json.dumps(payload), 
-                                headers=headers)
                 response = self.get_data_from_jobs(formset, request)
             else:
                 self.context['formset'] = formset
@@ -117,7 +113,6 @@ class ExperimentView(View):
 
     @method_decorator(login_required)
     def show_timer(self, request, experiment_id=None):
-
         total_time = 0
         
         if experiment_id is not None: 
@@ -134,6 +129,28 @@ class ExperimentView(View):
 
         return render(request, "timer.html", context)
 
+    def get_sensors(self, request=None):
+        url_to_rest = REST_BASE_URL + 'v1/sensor'
+        headers = {'content-type': 'application/json'}
+        payload = {'value': '-2'} # Flag to start experiment
+        response = api_requests.post(url_to_rest,data=json.dumps(payload), 
+                        headers=headers)
+        received_sensors = json.loads(response.content.decode('utf8'))
+        if received_sensors:
+            sensors = []
+            for received_sensor in received_sensors:
+                sensor = Sensor.objects.update_or_create(name=received_sensor['name'], active=True)
+                sensors.append(sensor[0])
+        else:
+            sensors = None
+
+        if request is not None:
+            html = render_to_string(u'found_sensors_list.html', {'sensors': sensors})
+            response = HttpResponse(html)
+        else:
+            response = sensors
+
+        return response
 
     def create_experiment(self, user):
         user_experiments = Experiment.objects.filter(user_id=user.pk)
@@ -166,7 +183,6 @@ class ExperimentView(View):
                             empty_job += 1
 
                 if empty_job != len(formset.cleaned_data):
-                    tasks.get_sensors()
                     response = redirect('timer', experiment_id=experiment.id)
 
                 else:
