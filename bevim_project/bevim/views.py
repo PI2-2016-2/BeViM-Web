@@ -9,8 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from datetime import date
+from functools import reduce
 import requests as api_requests
-import json 
+import json
 
 from bevim_project.settings import REST_BASE_URL
 from bevim.forms import UserForm, JobForm
@@ -113,17 +114,38 @@ class ExperimentView(View):
 
     @method_decorator(login_required)
     def show_timer(self, request, experiment_id=None):
-        total_time = 0
-        
-        if experiment_id is not None: 
-            experiment = Experiment.objects.get(pk=experiment_id) 
+
+        if experiment_id is not None:
+            experiment = Experiment.objects.get(pk=experiment_id)
             jobs = experiment.job_set.all()
-        
+
+            total_time = 0
+            jobs_info = {}
+            i = 1
             for job in jobs:
+                jobs_info[i] = {
+                    'job_pk': job.pk,
+                    'frequency': job.choose_frequency,
+                    'time': job.job_time
+                }
                 total_time += job.job_time
+                i += 1
+
+            dict_jobs = {
+                'jobs': jobs_info,
+                'total_time': total_time
+            }
+
+            # Sum the job times and then encode it to json
+            # sum_job_times = lambda j1, j2: (j1.job_time + j2.job_time)
+            # dict_jobs['total_time'] = reduce(sum_job_times, jobs)
+            json_jobs = json.dumps(dict_jobs)
+
+            print
+            print(json_jobs)
 
         context = {
-            'total_time' : total_time,
+            'jobs_info' : json_jobs,
             'experiment_id': experiment_id,
         }
 
@@ -133,9 +155,13 @@ class ExperimentView(View):
         url_to_rest = REST_BASE_URL + 'v1/sensor'
         headers = {'content-type': 'application/json'}
         payload = {'value': '-2'} # Flag to start experiment
-        response = api_requests.post(url_to_rest,data=json.dumps(payload), 
+        response = api_requests.post(url_to_rest,data=json.dumps(payload),
                         headers=headers)
         received_sensors = json.loads(response.content.decode('utf8'))
+
+        print
+        print(received_sensors)
+
         if received_sensors:
             sensors = []
             for received_sensor in received_sensors:

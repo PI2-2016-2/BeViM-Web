@@ -5,8 +5,8 @@
 
 {% block content %}
 
-	<div class="time" id="total_time" style="display: none;">
-    	{{ total_time }}
+	<div class="jobs_info" id="jobs_info" style="display: none;">
+    	{{ jobs_info }}
 	</div>
 
 	<div class="row" style="margin-top: 10%;">
@@ -35,8 +35,8 @@
 		<div class="col-md-4">
 		</div>
 	</div>
-	
-	<div class="row">	
+
+	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-primary">
 		            <div class="panel-heading">
@@ -64,7 +64,7 @@
 				    <h2 class="panel-title"><b>Hora Final</b></h2>
 	            </div>
                     <div class="huge text-center">
-						<h1 id="finalTime"></h1>
+						<h1 id="finalTime"><i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i></h1>
                     </div>
 	        </div>
 		</div>
@@ -74,16 +74,24 @@
 	    </div>
 	</div>
 
+	<div id="jobresult">RESULTADO: <br></div>
+
 	<script type="text/javascript">
-		var dataObject = new Date();
-    	var hours = dataObject.getHours();
-    	var minutes = dataObject.getMinutes();
-    	var seconds = dataObject.getSeconds();
- 
+		var dateObject = new Date();
+    	var hours = dateObject.getHours();
+    	var minutes = dateObject.getMinutes();
+    	var seconds = dateObject.getSeconds();
+
+    	var startTime = dateObject.getTime();
+
     	var initialTime = document.getElementById("initialTime");
     	initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
- 
-    	var time = document.querySelector(".time").textContent;
+
+    	var jobsInfo = JSON.parse(document.querySelector(".jobs_info").textContent);
+
+    	console.log(jobsInfo);
+
+    	var time = jobsInfo.total_time;
     	var experimentTime = document.getElementById("experimentTime");
  		experimentTime.innerHTML = time + " segundos";
 
@@ -92,10 +100,60 @@
 
 			var dateElapsed = new Date();
 
+			checkJobTimes(dateElapsed);
+
 			elapsedTime.innerHTML =  dateElapsed.getHours() + ":" + dateElapsed.getMinutes()+ ":" + dateElapsed.getSeconds();
 		}
 
-		var timer = setInterval(updateElapsedTime, 500);
+		function checkJobTimes(nowTime){
+
+			var jobs = jobsInfo.jobs;
+			for(var job in jobs){
+
+				// The first job is fired when the test begins
+				if(job != 1){
+
+					// The job N must start when the job N-1 finish
+					var jobTime = calculateJobNTime(jobs, job-1);
+
+					// Add the job N-1 time to the start time
+					var initTime = new Date(startTime);
+					var jobCurrentTime = initTime;
+					jobCurrentTime.setSeconds(jobCurrentTime.getSeconds() + jobTime);
+
+					if(nowTime.toTimeString() === jobCurrentTime.toTimeString()){
+						console.log("JOB " + job +" FIRED IN:");
+						console.log(nowTime.toTimeString());
+						console.log("/////");
+						fireJob(job);
+					}
+				}
+			}
+		}
+
+		/**
+		 * Calculates the time needed to N job in a list of jobs
+		 */
+		function calculateJobNTime(jobs, job){
+
+			// If is the first job
+			if(job == 1){
+				return jobs[1].time;
+			}else{
+				return (calculateJobNTime(jobs, job-1) + jobs[job].time);
+			}
+		}
+
+		function fireJob(job){
+
+			var previous = $("#jobresult").html() + "<br>";
+			$("#jobresult").html(previous + "Job " + job + " reached in " + (new Date().toTimeString()));
+
+			//**** Make a request here to the rapsberry server to change the frequency ****//
+		}
+
+		fireJob(1); // Start the first job when the experiment begins
+		var timer = setInterval(updateElapsedTime, 1000);
 
 		function stopUpdate() {
 			clearInterval(timer);
