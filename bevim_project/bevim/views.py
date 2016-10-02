@@ -152,8 +152,6 @@ class ExperimentView(View):
             # dict_jobs['total_time'] = reduce(sum_job_times, jobs)
             json_jobs = json.dumps(dict_jobs)
 
-            print
-            print(json_jobs)
 
         context = {
             'jobs_info' : json_jobs,
@@ -166,9 +164,6 @@ class ExperimentView(View):
         payload = {'value': '-2'} # Flag to start experiment
         response = post_to_rasp_server('v1/sensor', payload)
         received_sensors = json.loads(response.content.decode('utf8'))
-
-        print
-        print(received_sensors)
 
         if received_sensors:
             sensors = []

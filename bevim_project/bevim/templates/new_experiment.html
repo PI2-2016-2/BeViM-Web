@@ -5,66 +5,52 @@
 
 {% block content %}
 
-{% column lg="8"%}
-    <form id="new_experiment_form" method="post" action="{% url 'new_experiment' %}">
-        {% csrf_token %}
+    {% row %}
+        {% column md="8" md_offset="2" %}
+            {% row %}
+                {% if not busy_equipment %}
+                    <button id="start_experiment" type="submit" class="btn btn-success btn-block btn-lg">
+                {% else %}
+                    <button id="start_experiment" type="submit" class="btn btn-success btn-block btn-lg" disabled="true">
+                {% endif %}
+                        <b>{% trans 'Start Experiment' %} <i class="fa fa-play"></i></b>
+                    </button>
+            {% endrow %}
 
-        {% column lg="4"%} <b>{% trans 'Frequency'%}</b> {% endcolumn %}
+            <br>
+            <br>
 
-        {% column lg="4"%} <b>{% trans 'Job Time'%} </b> {% endcolumn %}
+            <form id="new_experiment_form" method="post" action="{% url 'new_experiment' %}">
+                {% csrf_token %}
 
-        {% column lg="4"%}
+                {% row %}
+                    {{ formset.management_form }}
+                    <div id="form_set">
+                        {% for form in formset.forms %}
+                            <table class='no_error'>
+                                <tr>
+                                    {% bootstrap_form form layout='horizontal' show_label=False%}
+                                </tr>
+                            </table>
+                        {% endfor %}
+                    </div>
+                    <div id="empty_form" style="display:none">
+                        <table class='.'>
+                            <tr>
+                            {% bootstrap_form formset.empty_form layout='horizontal' show_label=False%}
+                            </tr>
+                        </table>
 
-            {% buttons %}
-                <center>
-                    {% if not busy_equipment %}
-                        <button id="start_experiment" type="submit" class="btn btn-primary">
-                    {% else %}
-                        <button id="start_experiment" type="submit" class="btn btn-primary" disabled="true">
-                    {% endif %}
-                            {% trans 'Start Experiment' %}
-                        </button>
-                </center>
+                    </div>
 
-            {% endbuttons %}
+                    {% column md="2"%}
+                        <input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-primary">
+                    {% endcolumn %}
 
-
+                {% endrow %}
+            </form>
         {% endcolumn %}
-
-
-        {% column lg="8"%}
-
-            {{ formset.management_form }}
-            <div id="form_set">
-
-                {% for form in formset.forms %}
-                    <table class='no_error'>
-                        <tr>
-                            {% bootstrap_form form layout='horizontal' show_label=False%}
-                        </tr>
-                    </table>
-
-                {% endfor %}
-            </div>
-            <div id="empty_form" style="display:none">
-                <table class='no_error'>
-                    <tr>
-                    {% bootstrap_form formset.empty_form layout='horizontal' show_label=False%}
-                    </tr>
-                </table>
-
-            </div>
-
-            {% column lg="2"%}
-                <input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-success">
-
-            {% endcolumn %}
-
-        {% endcolumn %}
-
-    </form>
-
-{% endcolumn %}
+    {% endrow %}
     
     <div id="load_sensors_url" style="display: none;">
         {% url 'load_sensors' %}

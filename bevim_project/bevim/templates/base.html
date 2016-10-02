@@ -14,10 +14,13 @@
     <nav class="navbar navbar-default navbar-fixed-top">
 	  <div class="container">
 	    <div class="navbar-header">
+          {% block brand-link %}
           <a class="navbar-brand" href="/" id="app_title"><i>BEViM</i></a>
+          {% endblock %}
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            {% block nav-links %}
             <ul class="nav navbar-nav">
             {% if not user.is_authenticated %}
         	{% else %}
@@ -26,22 +29,23 @@
             </li>
             {%endif%}
             </ul>
-        <ul class="nav navbar-nav navbar-right">
-            {% if not user.is_authenticated %}
-                <li>
-                    <a href="{% url 'login'%}">{% trans 'Login' %}</a>
-                </li>
-            {% else %}
-                <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                </a>
-                </li>
-                <li>
-                    <a href="{% url 'logout'%}">{% trans 'Logout' %}</a>
-                </li>
-            {% endif %}
-
-        </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if not user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'login'%}">{% trans 'Login' %}</a>
+                    </li>
+                {% else %}
+                    <li class="dropdown notifications-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                    </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout'%}">{% trans 'Logout' %}</a>
+                    </li>
+                {% endif %}
+                
+            </ul>
+            {% endblock %}
         </div>
 
 
@@ -65,9 +69,9 @@
                 </div>
                 {% endblock %}
                 </div>
-                {% block content %}
-                {% endblock %}
             </div>
+            {% block content %}
+            {% endblock %}
         </div>
 
 {% endblock %}

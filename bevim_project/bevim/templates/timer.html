@@ -4,12 +4,20 @@
 {% load bootstrap_ui_tags %}
 
 {% block content %}
+    
+    {% block brand-link %}
+    {% endblock %}
+
+    {% block nav-links %}
+    {% endblock %}
+    
+    <div id="status_message"></div>
 
 	<div class="jobs_info" id="jobs_info" style="display: none;">
     	{{ jobs_info }}
 	</div>
 
-	<div class="row" style="margin-top: 10%;">
+	<div class="row">
 		<div class="row">
 		</div>
 
@@ -200,5 +208,22 @@
 		var timeToStop = time*1000;
 
 		setTimeout(stopUpdate, timeToStop);
+    </script>
+{% endblock %}
+
+{% block body-javascript %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function(){
+            $(document).on("keydown", disableF5);
+        });
+
+        function disableF5(e) {
+            if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82){
+                var message = "<div class='alert alert-dismissible alert-info text-center'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button> <b><h4>O experimento está sendo executado. Aguarde o fim do experimento.</h4></b></div>";
+                $("#status_message").html(message);
+                e.preventDefault();
+            }
+        }
 	</script>
 {% endblock %}
