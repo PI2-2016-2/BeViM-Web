@@ -69,8 +69,11 @@
 	        </div>
 		</div>
 		{% csrf_token %}
-		<div id="urlaccess" style="display: none;">
+		<div id="free_equipment_url" style="display: none;">
         	{% url 'free_equipment' experiment_id%}
+	    </div>
+	    <div id="change_frequency_url" style="display: none;">
+        	{% url 'change_frequency' %}
 	    </div>
 	</div>
 
@@ -124,6 +127,7 @@
 					if(nowTime.toTimeString() === jobCurrentTime.toTimeString()){
 						console.log("JOB " + job +" FIRED IN:");
 						console.log(nowTime.toTimeString());
+						console.log(nowTime.toTimeString());
 						console.log("/////");
 						fireJob(job);
 					}
@@ -146,10 +150,24 @@
 
 		function fireJob(job){
 
+			var jobs = jobsInfo.jobs;
+			var job_data = jobs[job];
 			var previous = $("#jobresult").html() + "<br>";
-			$("#jobresult").html(previous + "Job " + job + " reached in " + (new Date().toTimeString()));
+			$("#jobresult").html(previous + "Job " + job + " reached in " + (new Date().toTimeString()) + " with frequency " + job_data.frequency + " Hz");
 
 			//**** Make a request here to the rapsberry server to change the frequency ****//
+			var url = $("#change_frequency_url").html();
+			$.ajax({
+				type:"POST",
+				url: url,
+				data: {job: job_data.job_pk, frequency: job_data.frequency},
+			    beforeSend: function(xhr, settings) {
+					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+		        	xhr.setRequestHeader("X-CSRFToken", token);
+		      	},
+				success: function(){
+				}
+			});
 		}
 
 		fireJob(1); // Start the first job when the experiment begins
@@ -166,7 +184,7 @@
 		}
 
 		function freeEquipment(){
-		  	var url_post = $( "#urlaccess" ).html()
+		  	var url_post = $("#free_equipment_url").html();
 			$.ajax({
 				type:"POST",
 				url: url_post,
