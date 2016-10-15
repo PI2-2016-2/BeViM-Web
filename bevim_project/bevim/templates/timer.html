@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
+{% load staticfiles %}
 {% load i18n %}
 {% load bootstrap_ui_tags %}
 
+{% block head-javascript %}
+    {{ block.super }}
+    <script src="{% static 'js/experiment.core.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-    
+
     {% block brand-link %}
     {% endblock %}
 
     {% block nav-links %}
     {% endblock %}
-    
+
     <div id="status_message"></div>
 
 	<div class="jobs_info" id="jobs_info" style="display: none;">
@@ -18,12 +24,7 @@
 	</div>
 
 	<div class="row">
-		<div class="row">
-		</div>
-
-		<div class="col-md-4">
-		</div>
-		<div class="col-md-4">
+		<div class="col-md-4 col-md-offset-4">
 
 			<div class="panel panel-primary">
 	            <div class="panel-heading">
@@ -78,83 +79,92 @@
 		</div>
 		{% csrf_token %}
 		<div id="free_equipment_url" style="display: none;">
-        	{% url 'free_equipment' experiment_id%}
-	    </div>
-	    <div id="change_frequency_url" style="display: none;">
-        	{% url 'change_frequency' %}
-	    </div>
-	</div>
+            {% url 'free_equipment' experiment_id%}
+        </div>
+        <div id="change_frequency_url" style="display: none;">
+            {% url 'change_frequency' %}
+        </div>
+    </div>
 
-	<div id="jobresult">RESULTADO: <br></div>
+    <div id="jobresult">RESULTADO: <br></div>
 
-	<script type="text/javascript">
-		var dateObject = new Date();
-    	var hours = dateObject.getHours();
-    	var minutes = dateObject.getMinutes();
-    	var seconds = dateObject.getSeconds();
+    <script type="text/javascript">
 
-    	var startTime = dateObject.getTime();
-
-    	var initialTime = document.getElementById("initialTime");
-    	initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
-
-    	var jobsInfo = JSON.parse(document.querySelector(".jobs_info").textContent);
-
+        var jobsInfo = JSON.parse(document.querySelector(".jobs_info").textContent);
     	console.log(jobsInfo);
 
+        function updateElapsedTime() {
+            var elapsedTime = document.getElementById("elapsedTime");
+
+            var dateElapsed = new Date();
+
+            elapsedTime.innerHTML =  dateElapsed.getHours() + ":" + dateElapsed.getMinutes()+ ":" + dateElapsed.getSeconds();
+        }
+
+        function stopUpdate() {
+            var finalTime = document.getElementById("finalTime");
+            var finalDate = new Date();
+            finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
+
+            freeEquipment();
+        }
+
+        function createTimers(jobsJson, experiment){
+
+            for (var jobNum in jobsJson) {
+                var job = jobsJson[jobNum];
+                var timer = new Timer(jobNum, job.time, updateElapsedTime, function(){}, 1000);
+                experiment.addTimer(timer);
+            }
+        }
+
+        function transition(experiment){
+
+            console.log("Changing job...");
+
+            // Fire the job to the next timer
+            fireJob(+experiment.currentTimer.ref + 1);
+
+            /*
+
+                fireJob(+experiment.currentTimer.ref + 1)
+
+                wait for table reply
+
+                if table is on right frequency:
+                    experiment.continue()
+
+            */
+
+            experiment.continue();
+        }
+
+        var experiment = new Experiment(
+            function(){
+                alert("Experiment started!");
+                fireJob(1); // Start the first job when the experiment begins
+            },
+            stopUpdate,
+            transition
+        );
+
+        createTimers(jobsInfo.jobs, experiment);
+
+        var dateObject = experiment.start(); // Start the experiment
+
+        var hours = dateObject.getHours();
+        var minutes = dateObject.getMinutes();
+        var seconds = dateObject.getSeconds();
+
+        var startTime = dateObject.getTime();
+
+        var initialTime = document.getElementById("initialTime");
+        initialTime.innerHTML = hours + ":" + minutes + ":" + seconds;
+
+        // Print the total time of experiment on screen
     	var time = jobsInfo.total_time;
     	var experimentTime = document.getElementById("experimentTime");
  		experimentTime.innerHTML = time + " segundos";
-
-		function updateElapsedTime() {
-			var elapsedTime = document.getElementById("elapsedTime");
-
-			var dateElapsed = new Date();
-
-			checkJobTimes(dateElapsed);
-
-			elapsedTime.innerHTML =  dateElapsed.getHours() + ":" + dateElapsed.getMinutes()+ ":" + dateElapsed.getSeconds();
-		}
-
-		function checkJobTimes(nowTime){
-
-			var jobs = jobsInfo.jobs;
-			for(var job in jobs){
-
-				// The first job is fired when the test begins
-				if(job != 1){
-
-					// The job N must start when the job N-1 finish
-					var jobTime = calculateJobNTime(jobs, job-1);
-
-					// Add the job N-1 time to the start time
-					var initTime = new Date(startTime);
-					var jobCurrentTime = initTime;
-					jobCurrentTime.setSeconds(jobCurrentTime.getSeconds() + jobTime);
-
-					if(nowTime.toTimeString() === jobCurrentTime.toTimeString()){
-						console.log("JOB " + job +" FIRED IN:");
-						console.log(nowTime.toTimeString());
-						console.log(nowTime.toTimeString());
-						console.log("/////");
-						fireJob(job);
-					}
-				}
-			}
-		}
-
-		/**
-		 * Calculates the time needed to N job in a list of jobs
-		 */
-		function calculateJobNTime(jobs, job){
-
-			// If is the first job
-			if(job == 1){
-				return jobs[1].time;
-			}else{
-				return (calculateJobNTime(jobs, job-1) + jobs[job].time);
-			}
-		}
 
 		function fireJob(job){
 
@@ -178,19 +188,6 @@
 			});
 		}
 
-		fireJob(1); // Start the first job when the experiment begins
-		var timer = setInterval(updateElapsedTime, 1000);
-
-		function stopUpdate() {
-			clearInterval(timer);
-
-			var finalTime = document.getElementById("finalTime");
-			var finalDate = new Date();
-			finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
-
-			freeEquipment();
-		}
-
 		function freeEquipment(){
 		  	var url_post = $("#free_equipment_url").html();
 			$.ajax({
@@ -205,9 +202,6 @@
 				}
 			});
 		}
-		var timeToStop = time*1000;
-
-		setTimeout(stopUpdate, timeToStop);
     </script>
 {% endblock %}
 
