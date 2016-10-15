@@ -78,13 +78,14 @@
 	        </div>
 		</div>
 		{% csrf_token %}
-		<div id="free_equipment_url" style="display: none;">
-            {% url 'free_equipment' experiment_id%}
-        </div>
-        <div id="change_frequency_url" style="display: none;">
-            {% url 'change_frequency' %}
-        </div>
-    </div>
+
+		<div id="stop_experiment_url" style="display: none;">
+        	{% url 'stop_experiment' experiment_id%}
+	    </div>
+	    <div id="change_frequency_url" style="display: none;">
+        	{% url 'change_frequency' %}
+	    </div>
+	</div>
 
     <div id="jobresult">RESULTADO: <br></div>
 
@@ -189,7 +190,7 @@
 		}
 
 		function freeEquipment(){
-		  	var url_post = $("#free_equipment_url").html();
+		  	var url_post = $("#stop_experiment_url").html();
 			$.ajax({
 				type:"POST",
 				url: url_post,

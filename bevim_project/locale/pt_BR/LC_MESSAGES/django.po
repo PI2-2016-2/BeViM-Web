@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-25 15:07-0300\n"
+"POT-Creation-Date: 2016-10-14 15:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,41 +56,71 @@ msgstr "Cadastrar"
 msgid "Lost password"
 msgstr "Esqueceu a senha"
 
-#: bevim/templates/new_experiment.html:17
-msgid "Frequency"
-msgstr "Frequência"
-
-#: bevim/templates/new_experiment.html:23
-msgid "Job Time"
-msgstr "Tempo"
-
-#: bevim/templates/new_experiment.html:36
+#: bevim/templates/new_experiment.html:16
 msgid "Start Experiment"
 msgstr "Iniciar Ensaio"
 
-#: bevim/templates/new_experiment.html:72
+#: bevim/templates/new_experiment.html:47
 msgid "Add Another Job"
 msgstr "Adicionar outra frequência"
 
-#: bevim/views.py:50
+#: bevim/templates/received_sensors_modal.html:10
+msgid "Received sensors"
+msgstr "Sensores recebidos"
+
+#: bevim/templates/received_sensors_modal.html:13
+msgid "Do you confirm the sensors we found"
+msgstr "Você confirma os sensores encontrados"
+
+#: bevim/templates/received_sensors_modal.html:15
+msgid "Found sensors"
+msgstr "Sensores detectados"
+
+#: bevim/templates/received_sensors_modal.html:29
+msgid "RELOAD"
+msgstr "Atualizar"
+
+#: bevim/templates/received_sensors_modal.html:32
+msgid "CONFIRM SENSORS"
+msgstr "Confirmar sensores"
+
+#: bevim/tests.py:36
+msgid "Tempo do Ensaio"
+msgstr ""
+
+#: bevim/tests.py:46
+msgid "Certifique-se que este valor seja menor ou igual a 100."
+msgstr ""
+
+#: bevim/tests.py:57
+msgid "Certifique-se que este valor seja maior ou igual a 0."
+msgstr ""
+
+#: bevim/views.py:78
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:58
+#: bevim/views.py:86
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:88
+#: bevim/views.py:115
 msgid "The equipment is in use by another user."
 msgstr "A bancada está em uso por outro usuário."
 
-#: bevim/views.py:176
+#: bevim/views.py:237
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."
 msgstr ""
 "Não é possível iniciar um ensaio sem uma frequência e um tempo. Por favor, "
 "preencha os campos."
+
+#~ msgid "Frequency"
+#~ msgstr "Frequência"
+
+#~ msgid "Job Time"
+#~ msgstr "Tempo"
 
 #, fuzzy
 #~| msgid "New Experiment"

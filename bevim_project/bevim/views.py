@@ -9,34 +9,25 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from datetime import date
-import requests as api_requests
 import json
 
-from bevim_project.settings import REST_BASE_URL
 from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job, Sensor
 from bevim import tasks
+from bevim.utils import ExperimentUtils, RestUtils
 
-
-def post_to_rasp_server(url, data, headers=None):
-    url_to_rest = REST_BASE_URL + url
-    if headers is None:
-        headers = {'content-type': 'application/json'}
-    response = api_requests.post(url_to_rest, data=json.dumps(data),
-                    headers=headers)
-    return response
 
 def change_frequency(request):
     new_frequency = request.POST['frequency']
     payload = {'frequency': new_frequency}
-    response = post_to_rasp_server('v1/control/change_frequency', payload)
+    response = RestUtils.post_to_rasp_server('v1/control/change_frequency', payload)
     return HttpResponse()
 
-def free_equipment(request, experiment_id):
+def stop_experiment(request, experiment_id):
+
     if experiment_id:
-        experiment = Experiment.objects.get(pk=experiment_id)
-        experiment.active = False
-        experiment.save()
+        experiment = ExperimentUtils.free_equipment(experiment_id)
+        ExperimentUtils.populate_database(experiment)
     else:
         return HttpResponseBadRequest()
 
@@ -162,7 +153,7 @@ class ExperimentView(View):
 
     def get_sensors(self, request=None):
         payload = {'value': '-2'} # Flag to start experiment
-        response = post_to_rasp_server('v1/sensor', payload)
+        response = RestUtils.post_to_rasp_server('v1/sensor', payload)
         received_sensors = json.loads(response.content.decode('utf8'))
 
         if received_sensors:
