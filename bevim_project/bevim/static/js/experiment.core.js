@@ -43,7 +43,7 @@ Timer.prototype.stop = function(){
 
 Timer.prototype.cancel = function(){
 
-    this.stop();
+    this.endTime = this.stop();
     clearTimeout(this.timeout);
 
     var stopTime = new Date();
@@ -123,4 +123,12 @@ Experiment.prototype.startNextTimer = function(){
 
 Experiment.prototype.continue = function(){
     this.startNextTimer();
+};
+
+Experiment.prototype.stop = function(stopFunction){
+    this.currentTimer.cancel();
+    this.onFinish();
+    if(stopFunction){
+        stopFunction();
+    }
 };

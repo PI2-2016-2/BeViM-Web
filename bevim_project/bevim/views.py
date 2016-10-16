@@ -21,7 +21,7 @@ def change_frequency(request):
     new_frequency = request.POST['frequency']
     payload = {'frequency': new_frequency}
     response = RestUtils.post_to_rasp_server('v1/control/change_frequency', payload)
-    return HttpResponse()
+    return HttpResponse(response.status_code)
 
 def stop_experiment(request, experiment_id):
 

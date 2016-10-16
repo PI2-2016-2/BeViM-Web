@@ -91,6 +91,8 @@
 
     <script type="text/javascript">
 
+    	var experiment;
+
         var jobsInfo = JSON.parse(document.querySelector(".jobs_info").textContent);
     	console.log(jobsInfo);
 
@@ -107,7 +109,7 @@
             var finalDate = new Date();
             finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
 
-            freeEquipment();
+            stopExperiment();
         }
 
         function createTimers(jobsJson, experiment){
@@ -140,7 +142,7 @@
             experiment.continue();
         }
 
-        var experiment = new Experiment(
+        experiment = new Experiment(
             function(){
                 alert("Experiment started!");
                 fireJob(1); // Start the first job when the experiment begins
@@ -184,12 +186,17 @@
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);
 		      	},
-				success: function(){
+				success: function(response){
+					if (response == "500"){
+						// In this case the control system is down, so stop the experiment
+						createAlert("status_message", "danger", "Não foi possível realizar a comunicação com o sistema de controle. Tente novamente.");
+						experiment.stop();
+					}
 				}
 			});
 		}
 
-		function freeEquipment(){
+		function stopExperiment(){
 		  	var url_post = $("#stop_experiment_url").html();
 			$.ajax({
 				type:"POST",
@@ -203,6 +210,16 @@
 				}
 			});
 		}
+
+		function createAlert(bindTo, type, message, overwrite){
+			var alertCode = "<div class='alert alert-dismissible alert-" + type + " text-center'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button> <b><h4>" + message + "</h4></b></div>";
+			if(overwrite){
+				$("#"+bindTo).html(alertCode);
+			}else{
+				var previous = $("#"+bindTo).html();
+				$("#"+bindTo).html(previous + alertCode);
+			}
+		}
     </script>
 {% endblock %}
 
@@ -215,8 +232,7 @@
 
         function disableF5(e) {
             if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82){
-                var message = "<div class='alert alert-dismissible alert-info text-center'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button> <b><h4>O experimento está sendo executado. Aguarde o fim do experimento.</h4></b></div>";
-                $("#status_message").html(message);
+                createAlert("status_message", "info", "O experimento está sendo executado. Aguarde o fim do experimento.", true);
                 e.preventDefault();
             }
         }
