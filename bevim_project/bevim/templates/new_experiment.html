@@ -34,6 +34,7 @@
                             </table>
                         {% endfor %}
                     </div>
+             
                     <div id="empty_form" style="display:none">
                         <table class='.'>
                             <tr>
@@ -43,9 +44,16 @@
 
                     </div>
 
-                    {% column md="2"%}
-                        <input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-primary">
-                    {% endcolumn %}
+                    <div id="buttons">
+                        <div class="col-md-2" id="column_remove_button" style="display:none">
+                            <button onclick='removeFrequency("__prefix__")' id='remove_button-__prefix__' type='button' class='btn btn-danger'><span class="fa fa-remove"></span></button>
+                        </div>
+
+                        <div class="col-md-2" id="column_add_button">
+                            <input type="button" value="{% trans 'Add Another Job' %}" id="add_more" class="btn btn-primary">
+                        </div>
+                    </div>
+
 
                 {% endrow %}
             </form>
