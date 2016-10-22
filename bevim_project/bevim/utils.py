@@ -1,9 +1,10 @@
-from django.db import connection, IntegrityError
+from django.db import connection, IntegrityError, transaction
 import json
 import requests as api_requests
 
-from bevim.models import Experiment, Job, Sensor, Acceleration
+from bevim.models import Experiment, Job, Sensor, Acceleration, Amplitude, Frequency, Speed
 from bevim_project.settings import REST_BASE_URL
+from django.db.models.signals import post_save
 
 
 # Util methods - Controller
@@ -18,34 +19,21 @@ class ExperimentUtils:
                 jobs_ids.append(job.id)
 
             if jobs_ids:
-                ExperimentUtils.save_data(jobs_ids, "acceleration")
-                ExperimentUtils.save_data(jobs_ids, "amplitude")
-                ExperimentUtils.save_data(jobs_ids, "frequency")
-                ExperimentUtils.save_data(jobs_ids, "speed")
+                ExperimentUtils.save_data(jobs_ids, "acceleration", Acceleration)
+                ExperimentUtils.save_data(jobs_ids, "amplitude", Amplitude)
+                ExperimentUtils.save_data(jobs_ids, "frequency", Frequency)
+                ExperimentUtils.save_data(jobs_ids, "speed", Speed)
 
-    def save_data(jobs, data_type):
-       
+    def save_data(jobs, data_type, data_class):
         experiment_data = ExperimentUtils.get_data_by_jobs(jobs, data_type)
-        values = ExperimentUtils.get_values_to_insert(experiment_data)
-        
-        if values != "":
-            try:
-                # Start transaction
-                DatabaseUtils.execute_query("START TRANSACTION;")
-            
-                # Inserting on mother table (Data)
-                values = values[0:(len(values) - 1)]
-                first_id = DatabaseUtils.insert_experiment_data(values)
-                
-                # Inserting ids on child table (Acceleration)
-                DatabaseUtils.insert_child_ids(data_type, first_id[0], len(experiment_data))
-
-                # Commit transaction
-                DatabaseUtils.execute_query("COMMIT;")
-
-            except IntegrityError:
-                # Commit transaction
-                DatabaseUtils.execute_query("ROLLBACK;")
+        if experiment_data:
+            with transaction.atomic():
+                for data in experiment_data:
+                    sensor_data = data['sensor']
+                    sensor = Sensor.objects.get(name=sensor_data['name'])
+                    job = Job.objects.get(pk=data['job_id'])
+                    data_class.objects.create(sensor=sensor, x_value=data['x_value'], y_value=data['y_value'],
+                                            z_value=data['z_value'], timestamp=data['timestamp'], job=job)
 
     def get_data_by_jobs(jobs, data_type):
         response = RestUtils.get_from_rasp_server('v1/' + data_type)
@@ -60,16 +48,6 @@ class ExperimentUtils:
 
         return data_jobs
 
-    def get_values_to_insert(experiment_data):
-        values = ""
-        if experiment_data:
-            for data in experiment_data:
-                sensor_data = data['sensor']
-                sensor = Sensor.objects.get(name=sensor_data['name'])
-                job = Job.objects.get(pk=data['job_id'])
-                values += "('"+ str(sensor.id) + "', '"+ data['x_value'] + "', '"+ data['y_value'] + "', '"+ data['z_value'] + "', '"+ data['timestamp'] + "', '"+ str(job.id) + "'),"
-
-        return values
 
     def free_equipment(experiment_id):
         experiment = Experiment.objects.get(pk=experiment_id)
@@ -93,43 +71,3 @@ class RestUtils:
         response = api_requests.get(url_to_rest)
 
         return response
-
-
-class DatabaseUtils:
-
-    def execute_query(query):
-        with connection.cursor() as cursor:
-            try:
-                cursor.execute(query)
-                row = cursor.fetchone()
-            except:
-                raise IntegrityError
-
-        return row
-
-    def insert_experiment_data(values):
-        try:
-            query = "INSERT INTO `bevim_data` (`sensor_id`, `x_value`, `y_value`, `z_value`, `timestamp`, `job_id`) VALUES " + values
-            DatabaseUtils.execute_query(query);
-
-            query_to_get_id = "SELECT last_insert_id();"
-            last_id = DatabaseUtils.execute_query(query_to_get_id);    
-            
-            return last_id
-        
-        except IntegrityError:
-            raise IntegrityError
-
-    def insert_child_ids(table, first_id, number_of_accelerations):
-
-        values = ""
-        limit = first_id + number_of_accelerations
-        for data_id in range(first_id, limit):
-            values += "(" + str(data_id) + ")," 
-
-        try:
-            query = "INSERT INTO `bevim_" + table +"` (`data_ptr_id`) VALUES " + values[0:(len(values) - 1)]
-            DatabaseUtils.execute_query(query);
-
-        except IntegrityError:
-            raise IntegrityError
