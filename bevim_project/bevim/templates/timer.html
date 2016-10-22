@@ -181,13 +181,14 @@
 			$.ajax({
 				type:"POST",
 				url: url,
-				data: {job: job_data.job_pk, frequency: job_data.frequency},
+				data: {job: job, frequency: job_data.frequency},
 			    beforeSend: function(xhr, settings) {
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);
 		      	},
 				success: function(response){
-					if (response == "500"){
+                    var CONTROL_SYSTEM_IS_DOWN = "500";
+					if (response == CONTROL_SYSTEM_IS_DOWN){
 						// In this case the control system is down, so stop the experiment
 						createAlert("status_message", "danger", "Não foi possível realizar a comunicação com o sistema de controle. Tente novamente.");
 						experiment.stop();

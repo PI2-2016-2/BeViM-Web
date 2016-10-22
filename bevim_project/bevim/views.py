@@ -19,7 +19,8 @@ from bevim.utils import ExperimentUtils, RestUtils
 
 def change_frequency(request):
     new_frequency = request.POST['frequency']
-    payload = {'frequency': new_frequency}
+    job = request.POST['job']
+    payload = {'frequency': new_frequency, 'job': job}
     response = RestUtils.post_to_rasp_server('v1/control/change_frequency', payload)
     return HttpResponse(response.status_code)
 
