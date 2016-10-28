@@ -2,9 +2,9 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-from mock import patch
+from unittest.mock import patch
 from .forms import JobFormSet
-from .models import Sensor, Job
+from .models import Sensor, Job, Experiment
 
 
 class TestViews(TestCase):
@@ -33,7 +33,7 @@ class TestViews(TestCase):
         self.login()
 
         response = self.client.post(url_to_test, self.experiment_data, follow=True)
-        self.assertContains(response, _("Tempo do Ensaio"))
+        self.assertContains(response, _("Experiment time"))
 
     def test_start_experiment_with_frequency_greater_than_100(self):
         url_to_test = reverse('new_experiment')
@@ -66,24 +66,36 @@ class TestViews(TestCase):
         job = Job.objects.get(choose_frequency='50')
         self.assertTrue(job.job_time, '10')
 
-    # def test_if_detect_busy_equipment(self):
+    @patch('bevim.views.ExperimentView.get_sensors',
+           return_value=[Sensor(name="S1"), Sensor(name="S2")])
+    def test_if_detect_busy_equipment(self, sensors):
 
-    #     self.login()
-    #     url_to_test = reverse('new_experiment')
-    #     response_1 = self.client.post(url_to_test, self.experiment_data, follow=True)
+        self.login()
+        url_to_test = reverse('new_experiment')
+        response_1 = self.client.post(url_to_test, self.experiment_data, follow=True)
 
-    #     another_user = User.objects.create_user(username="joao", password="joao")
-    #     self.client.login(username="joao", password="joao") # Login with another user
-    #     response_2 = self.client.get(url_to_test)
+        another_user = User.objects.create_user(username="joao", password="joao")
+        self.client.login(username="joao", password="joao") # Login with another user
+        response_2 = self.client.get(url_to_test)
         
-    #     self.assertContains(response_2, _('The equipment is in use by another user.'))
+        self.assertContains(response_2, _('The equipment is in use by another user.'))
 
-    # @patch('.views.ExperimentView.get_sensors()',
-    #        return_value=1)
-    # def test_if_get_sensors(self):
-    #     url_to_test = reverse('experiment')
-    #     self.login()
+    @patch('bevim.views.ExperimentView.get_sensors',
+           return_value=[Sensor(name="S1"), Sensor(name="S2")])
+    def test_if_get_sensors(self, sensors):
+        url_to_test = reverse('new_experiment')
+        self.login()
 
-    #     response = self.client.get(url_to_test)
-    #     self.assertTemplateUsed(response, "new_experiment.html")
-    #     self.assertContains(response, _("S1"))
+        response = self.client.get(url_to_test)
+        self.assertTemplateUsed(response, "new_experiment.html")
+        self.assertContains(response, "S1")
+
+    def test_if_free_equipment(self):
+        
+        experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
+        from .utils import ExperimentUtils
+        ExperimentUtils.free_equipment(experiment.id)
+
+        experiment_after_free = Experiment.objects.get(pk=experiment.id)
+        self.assertFalse(experiment_after_free.active)
+
