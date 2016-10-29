@@ -1,3 +1,22 @@
-{% for sensor in sensors %}
-	<h4> <i class="fa fa-check-square-o"></i> Sensor <b>{{ sensor.name }}</b></h4>
-{% endfor %}
+{% load i18n %}
+
+{% if sensors != False %}
+    {% if sensors == None %}
+        <div class='alert alert-dismissible alert-info text-center'>
+            <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                <span aria-hidden='true'>&times;</span>
+            </button>
+            <b><h4>{% trans 'No sensors found'%}.<p>{% trans 'Maybe because of a connection issue. Try reloading the sensors.' %}</h4></b>
+        </div>
+    {% endif %}
+    {% for sensor in sensors %}
+    	<h4> <i class="fa fa-check-square-o"></i> Sensor <b>{{ sensor.name }}</b></h4>
+    {% endfor %}
+{% else %}
+    <div class='alert alert-dismissible alert-danger text-center'>
+        <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+        </button>
+        <b><h4>{% trans 'No connection to the server. Could not retrieve the present sensors. Try again.' %}</h4></b>
+    </div>
+{% endif %}

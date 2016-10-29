@@ -51,11 +51,11 @@
             </form>
         {% endcolumn %}
     {% endrow %}
-    
+
     <div id="load_sensors_url" style="display: none;">
         {% url 'load_sensors' %}
     </div>
-    
+
     {% include "received_sensors_modal.html" with sensors=sensors %}
 
 {% endblock %}
@@ -74,6 +74,15 @@
         });
 
         $("#reload_sensors_btn").click(function(event){
+
+            // Cleaning the list before refreshing
+            $("#found_sensors_list").html("");
+
+            // Making button icon spin while waiting for connection
+            var buttonContent = $("#reload_sensors_btn").html();
+            var spinningButtonContent = "<i class='fa fa-refresh fa-spin fa-fw' aria-hidden='true'>";
+            $("#reload_sensors_btn").html(spinningButtonContent);
+
             var url_post = $("#load_sensors_url").html();
             $.ajax({
                 type:"POST",
@@ -84,6 +93,7 @@
                     xhr.setRequestHeader("X-CSRFToken", token);
                 },
                 success: function(data){
+                    $("#reload_sensors_btn").html(buttonContent);
                     $("#found_sensors_list").html(data);
                 }
             });

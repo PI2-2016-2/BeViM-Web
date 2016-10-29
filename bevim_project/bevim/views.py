@@ -10,11 +10,13 @@ from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from datetime import date
 import json
+import requests
 
 from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job, Sensor
 from bevim import tasks
 from bevim.utils import ExperimentUtils, RestUtils
+from bevim.protocol import flags as protocol_flags
 
 
 def change_frequency(request):
@@ -139,11 +141,7 @@ class ExperimentView(View):
                 'total_time': total_time
             }
 
-            # Sum the job times and then encode it to json
-            # sum_job_times = lambda j1, j2: (j1.job_time + j2.job_time)
-            # dict_jobs['total_time'] = reduce(sum_job_times, jobs)
             json_jobs = json.dumps(dict_jobs)
-
 
         context = {
             'jobs_info' : json_jobs,
@@ -153,25 +151,36 @@ class ExperimentView(View):
         return render(request, "timer.html", context)
 
     def get_sensors(self, request=None):
-        payload = {'value': '-2'} # Flag to start experiment
-        response = RestUtils.post_to_rasp_server('v1/sensor', payload)
-        received_sensors = json.loads(response.content.decode('utf8'))
-
-        if received_sensors:
-            sensors = []
-            for received_sensor in received_sensors:
-                sensor = Sensor.objects.update_or_create(name=received_sensor['name'], active=True)
-                sensors.append(sensor[0])
+        response = None
+        try:
+            payload = {'value': protocol_flags.GET_AVAILABLE_SENSORS_FLAG}
+            response = RestUtils.post_to_rasp_server('v1/sensor', payload)
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError):
+            if request is not None:
+                # sensors = False -> Means that there is no connection to the server
+                html = render_to_string(u'found_sensors_list.html', {'sensors': False})
+                response = HttpResponse(html)
+            else:
+                response = None
         else:
-            sensors = None
+            received_sensors = json.loads(response.content.decode('utf8'))
 
-        if request is not None:
-            html = render_to_string(u'found_sensors_list.html', {'sensors': sensors})
-            response = HttpResponse(html)
-        else:
-            response = sensors
+            if received_sensors:
+                sensors = []
+                for received_sensor in received_sensors:
+                    sensor = Sensor.objects.update_or_create(name=received_sensor['name'], active=True)
+                    sensors.append(sensor[0])
+            else:
+                sensors = None
 
-        return response
+            if request is not None:
+                html = render_to_string(u'found_sensors_list.html', {'sensors': sensors})
+                response = HttpResponse(html)
+            else:
+                response = sensors
+        finally:
+            return response
 
     def create_experiment(self, user):
         user_experiments = Experiment.objects.filter(user_id=user.pk)

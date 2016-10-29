@@ -13,11 +13,8 @@
           <h3><i class="fa fa-info"></i> <b>{% trans 'Do you confirm the sensors we found' %}?</b></h3>
           <br>
           <p align="left"> <strong><i class="fa fa-list-ul"></i> {% trans 'Found sensors' %}: </strong><br><br>
-            
+
             <div id="found_sensors_list">
-              <!-- {% for sensor in sensors %}
-                - <b>Sensor</b>: {{ sensor.name }}<br>
-              {% endfor %} -->
               {% include "found_sensors_list.html" with sensors=sensors %}
             </div>
 
