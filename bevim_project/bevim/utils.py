@@ -58,7 +58,7 @@ class ExperimentUtils:
 
 class RestUtils:
 
-    TIMEOUT = 5 # In seconds
+    TIMEOUT = 15 # In seconds
 
     @classmethod
     def post_to_rasp_server(cls, url, data, headers=None):
@@ -66,6 +66,15 @@ class RestUtils:
         if headers is None:
             headers = {'content-type': 'application/json'}
         response = api_requests.post(url_to_rest, data=json.dumps(data),
+                        headers=headers, timeout=cls.TIMEOUT)
+        return response
+
+    @classmethod
+    def put_to_rasp_server(cls, url, data, headers=None):
+        url_to_rest = REST_BASE_URL + url
+        if headers is None:
+            headers = {'content-type': 'application/json'}
+        response = api_requests.put(url_to_rest, data=json.dumps(data),
                         headers=headers, timeout=cls.TIMEOUT)
         return response
 

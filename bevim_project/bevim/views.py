@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.forms import formset_factory
@@ -16,7 +16,7 @@ from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job, Sensor
 from bevim import tasks
 from bevim.utils import ExperimentUtils, RestUtils
-from bevim.protocol import flags as protocol_flags
+from bevim import protocol
 
 
 def change_frequency(request):
@@ -31,6 +31,10 @@ def stop_experiment(request, experiment_id):
     if experiment_id:
         experiment = ExperimentUtils.free_equipment(experiment_id)
         ExperimentUtils.populate_database(experiment)
+
+        # Sending signal to stop experiment on the control system
+        payload = {'flag': protocol.STOP_EXPERIMENT_FLAG}
+        response = RestUtils.put_to_rasp_server('v1/control/change_frequency', payload)
     else:
         return HttpResponseBadRequest()
 
@@ -153,10 +157,11 @@ class ExperimentView(View):
     def get_sensors(self, request=None):
         response = None
         try:
-            payload = {'value': protocol_flags.GET_AVAILABLE_SENSORS_FLAG}
+            payload = {'value': protocol.GET_AVAILABLE_SENSORS_FLAG}
             response = RestUtils.post_to_rasp_server('v1/sensor', payload)
         except (requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError):
+
             if request is not None:
                 # sensors = False -> Means that there is no connection to the server
                 html = render_to_string(u'found_sensors_list.html', {'sensors': False})
