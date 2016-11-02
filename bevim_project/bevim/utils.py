@@ -20,9 +20,7 @@ class ExperimentUtils:
 
             if jobs_ids:
                 ExperimentUtils.save_data(jobs_ids, "acceleration", Acceleration)
-                ExperimentUtils.save_data(jobs_ids, "amplitude", Amplitude)
                 ExperimentUtils.save_data(jobs_ids, "frequency", Frequency)
-                ExperimentUtils.save_data(jobs_ids, "speed", Speed)
 
     def save_data(jobs, data_type, data_class):
         experiment_data = ExperimentUtils.get_data_by_jobs(jobs, data_type)
@@ -33,7 +31,7 @@ class ExperimentUtils:
                     sensor = Sensor.objects.get(name=sensor_data['name'])
                     job = Job.objects.get(pk=data['job_id'])
                     data_class.objects.create(sensor=sensor, x_value=data['x_value'], y_value=data['y_value'],
-                                            z_value=data['z_value'], timestamp=data['timestamp'], job=job)
+                                            z_value=data['z_value'], timestamp=data['timestamp_ref'], job=job)
 
     def get_data_by_jobs(jobs, data_type):
         response = RestUtils.get_from_rasp_server('v1/' + data_type)

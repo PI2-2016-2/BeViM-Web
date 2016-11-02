@@ -48,8 +48,11 @@ class Data(models.Model):
     x_value = models.DecimalField(max_digits=4, decimal_places=2)
     y_value = models.DecimalField(max_digits=4, decimal_places=2)
     z_value = models.DecimalField(max_digits=4, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DecimalField(max_digits=17, decimal_places=2 )
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
 
 
 class Acceleration(Data):

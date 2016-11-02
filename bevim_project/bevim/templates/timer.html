@@ -93,7 +93,8 @@
 
     	var experiment;
 
-        var jobsInfo = JSON.parse(document.querySelector(".jobs_info").textContent);
+        var jobsInfoString = document.querySelector(".jobs_info").textContent
+        var jobsInfo = JSON.parse(jobsInfoString);
     	console.log(jobsInfo);
 
         function updateElapsedTime() {
@@ -181,7 +182,7 @@
 			$.ajax({
 				type:"POST",
 				url: url,
-				data: {job: job, frequency: job_data.frequency},
+				data: {job: job, frequency: job_data.frequency, jobs_info: jobsInfoString},
 			    beforeSend: function(xhr, settings) {
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);

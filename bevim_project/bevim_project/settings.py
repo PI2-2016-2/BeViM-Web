@@ -84,10 +84,10 @@ LOGOUT_REDIRECT_URL = '/'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bevim-web',
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '',
     }
@@ -151,3 +151,4 @@ BOOTSTRAP3 = {
     'horizontal_field_class': 'col-md-5',
 }
 
+REST_BASE_URL="http://192.168.1.30:8001/api/"
