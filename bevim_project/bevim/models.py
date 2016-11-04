@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.core import validators
+from django.utils.translation import ugettext_lazy as _
 
 
 class Experiment(models.Model):
@@ -16,9 +17,9 @@ class Experiment(models.Model):
 
 
 class Job(models.Model):
-    choose_frequency = models.PositiveSmallIntegerField(
+    choose_frequency = models.PositiveSmallIntegerField(_('Frequency'), 
         validators=[MaxValueValidator(100)])
-    job_time = models.PositiveSmallIntegerField()
+    job_time = models.PositiveSmallIntegerField(_('Time in seconds'))
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
 
     def __str__(self):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-14 15:08-0300\n"
+"POT-Creation-Date: 2016-10-28 15:31-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,6 +35,14 @@ msgstr "Confirmação de Senha"
 #| msgid "Enter the same password as above, for verification."
 msgid "Enter the same password as above for verification."
 msgstr "Digite a mesma senha de cima, para verificação"
+
+#: bevim/models.py:20
+msgid "Frequency"
+msgstr "Frequência"
+
+#: bevim/models.py:22
+msgid "Time in seconds"
+msgstr "Tempo em segundos"
 
 #: bevim/templates/base.html:28
 msgid "New Experiment"
@@ -85,8 +93,8 @@ msgid "CONFIRM SENSORS"
 msgstr "Confirmar sensores"
 
 #: bevim/tests.py:36
-msgid "Tempo do Ensaio"
-msgstr ""
+msgid "Experiment time"
+msgstr "Tempo do Ensaio"
 
 #: bevim/tests.py:46
 msgid "Certifique-se que este valor seja menor ou igual a 100."
@@ -96,28 +104,25 @@ msgstr ""
 msgid "Certifique-se que este valor seja maior ou igual a 0."
 msgstr ""
 
-#: bevim/views.py:78
+#: bevim/views.py:58
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:86
+#: bevim/views.py:66
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:115
+#: bevim/views.py:95
 msgid "The equipment is in use by another user."
 msgstr "A bancada está em uso por outro usuário."
 
-#: bevim/views.py:237
+#: bevim/views.py:217
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."
 msgstr ""
 "Não é possível iniciar um ensaio sem uma frequência e um tempo. Por favor, "
 "preencha os campos."
-
-#~ msgid "Frequency"
-#~ msgstr "Frequência"
 
 #~ msgid "Job Time"
 #~ msgstr "Tempo"

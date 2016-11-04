@@ -170,15 +170,15 @@ class ExperimentView(View):
             else:
                 response = None
         else:
-            received_sensors = json.loads(response.content.decode('utf8'))
+            sensors = None
+            if response.content:
+                received_sensors = json.loads(response.content.decode('utf8'))
 
-            if received_sensors:
-                sensors = []
-                for received_sensor in received_sensors:
-                    sensor = Sensor.objects.update_or_create(name=received_sensor['name'], active=True)
-                    sensors.append(sensor[0])
-            else:
-                sensors = None
+                if received_sensors:
+                    sensors = []
+                    for received_sensor in received_sensors:
+                        sensor = Sensor.objects.update_or_create(name=received_sensor['name'], active=True)
+                        sensors.append(sensor[0])
 
             if request is not None:
                 html = render_to_string(u'found_sensors_list.html', {'sensors': sensors})
