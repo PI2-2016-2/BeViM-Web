@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^load_sensors$', views.ExperimentView().get_sensors, name='load_sensors'),
 
     url(r'^change_frequency$', views.change_frequency, name='change_frequency'),
+
+    url(r'^consult_frequency$', views.consult_frequency, name='consult_frequency'),
 ]

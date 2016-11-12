@@ -17,6 +17,7 @@
     {% block nav-links %}
     {% endblock %}
 
+    <div id="experiment_status"></div>
     <div id="status_message"></div>
 
 	<div class="jobs_info" id="jobs_info" style="display: none;">
@@ -85,6 +86,9 @@
 	    <div id="change_frequency_url" style="display: none;">
         	{% url 'change_frequency' %}
 	    </div>
+        <div id="consult_frequency_url" style="display: none;">
+            {% url 'consult_frequency' %}
+        </div>
 	</div>
 	{% include "stop_experiment_modal.html" with sensors=sensors %}
 
@@ -123,23 +127,78 @@
             }
         }
 
+        function consultTableFrequency(){
+
+            var url = $("#consult_frequency_url").html();
+
+            var frequency;
+
+            $.ajax({
+                type:"GET",
+                url: url,
+                data: {},
+                beforeSend: function(xhr, settings) {
+                    var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                },
+                success: function(response){
+                    frequency = (JSON.parse(response)).frequency;
+                },
+                async:false
+            });
+
+            console.log("CONSULT TABLE F:");
+            console.log(frequency);
+
+            return frequency;
+        }
+
         function transition(experiment){
 
             console.log("Changing job...");
 
+            createAlert("experiment_status", "info", "Experiment is paused for now...", false);
+
+            alert("Experiment is paused for now...");
+
+            var job = +experiment.currentTimer.ref + 1;
+
             // Fire the job to the next timer
-            fireJob(+experiment.currentTimer.ref + 1);
 
-            /*
+            /////////////////////////////////////
+            // fireJob(job);
+            /////////////////////////////////////
 
-                fireJob(+experiment.currentTimer.ref + 1)
+            var error = 2;
+            currentFrequency = consultTableFrequency();
 
-                wait for table reply
+            console.log("currentFrequency:");
+            console.log(currentFrequency);
 
-                if table is on right frequency:
-                    experiment.continue()
+            var jobs = jobsInfo.jobs;
+            var job_data = jobs[job];
+            var job_frequency = job_data.frequency;
 
-            */
+            var reachedRightFrequency = (currentFrequency != null)
+                && (
+                    currentFrequency > (job_frequency - error)
+                    // && currentFrequency < (job_frequency + error)
+                );
+
+            while(!reachedRightFrequency){
+                console.log("Waiting for table reach frequency " + job_frequency + " Hz...");
+                currentFrequency = consultTableFrequency();
+                console.log(currentFrequency);
+
+                reachedRightFrequency = (currentFrequency != null)
+                    && (
+                        currentFrequency > (job_frequency - error)
+                        // && currentFrequency < (job_frequency + error)
+                    );
+                console.log(reachedRightFrequency);
+            }
+
+            createAlert("experiment_status", "info", "frequency reached, keeping on...", false);
 
             experiment.continue();
         }
@@ -216,12 +275,14 @@
 		}
 
 		function createAlert(bindTo, type, message, overwrite){
+            console.log("On create alert:");
+            console.log(new Date());
 			var alertCode = "<div class='alert alert-dismissible alert-" + type + " text-center'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button> <b><h4>" + message + "</h4></b></div>";
-			if(overwrite){
-				$("#"+bindTo).html(alertCode);
-			}else{
-				var previous = $("#"+bindTo).html();
-				$("#"+bindTo).html(previous + alertCode);
+            if(overwrite){
+                $("#"+bindTo).html(alertCode);
+            }else{
+                var previous = $("#"+bindTo).html();
+                $("#"+bindTo).html(previous + alertCode);
 			}
 		}
     </script>

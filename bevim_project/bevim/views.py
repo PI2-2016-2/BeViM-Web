@@ -27,6 +27,10 @@ def change_frequency(request):
     response = RestUtils.post_to_rasp_server('v1/control/change_frequency', payload)
     return HttpResponse(response.status_code)
 
+def consult_frequency(request):
+    response = RestUtils.get_from_rasp_server('v1/consult/current_frequency')
+    return HttpResponse(response.content)
+
 def stop_experiment(request, experiment_id):
 
     if experiment_id:

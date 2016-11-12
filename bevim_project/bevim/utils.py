@@ -76,8 +76,8 @@ class RestUtils:
                         headers=headers, timeout=cls.TIMEOUT)
         return response
 
-    def get_from_rasp_server(url):
+    @classmethod
+    def get_from_rasp_server(cls, url):
         url_to_rest = REST_BASE_URL + url
         response = api_requests.get(url_to_rest)
-
         return response
