@@ -90,7 +90,6 @@
             {% url 'consult_frequency' %}
         </div>
 	</div>
-	{% include "stop_experiment_modal.html" with sensors=sensors %}
 
     <div id="jobresult">RESULTADO: <br></div>
 
@@ -268,8 +267,8 @@
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);
 		      	},
-				success: function(){
-				  	$("#processing_experiment").modal('show');
+				success: function(response){
+					window.location.href = response;
 				}
 			});
 		}

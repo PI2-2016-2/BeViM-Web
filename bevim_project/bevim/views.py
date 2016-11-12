@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.forms import formset_factory
@@ -8,12 +8,16 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
+from django.core.urlresolvers import reverse
+
 from datetime import date
 import json
 import requests
 
 from bevim.forms import UserForm, JobForm
-from bevim.models import Experiment, Job, Sensor
+from bevim.models import Experiment, Job, Sensor, Acceleration
 from bevim import tasks
 from bevim.utils import ExperimentUtils, RestUtils
 from bevim import protocol
@@ -30,20 +34,6 @@ def change_frequency(request):
 def consult_frequency(request):
     response = RestUtils.get_from_rasp_server('v1/consult/current_frequency')
     return HttpResponse(response.content)
-
-def stop_experiment(request, experiment_id):
-
-    if experiment_id:
-        experiment = ExperimentUtils.free_equipment(experiment_id)
-        ExperimentUtils.populate_database(experiment)
-
-        # Sending signal to stop experiment on the control system
-        payload = {'flag': protocol.STOP_EXPERIMENT_FLAG}
-        response = RestUtils.put_to_rasp_server('v1/control/change_frequency', payload)
-    else:
-        return HttpResponseBadRequest()
-
-    return HttpResponse(status=201)
 
 class HomeView(View):
 
@@ -159,6 +149,57 @@ class ExperimentView(View):
 
         return render(request, "timer.html", context)
 
+    def stop_experiment(self, request, experiment_id):
+        if experiment_id:
+            experiment = ExperimentUtils.free_equipment(experiment_id)
+
+            # Sending signal to stop experiment on the control system
+            payload = {'flag': protocol.STOP_EXPERIMENT_FLAG}
+            RestUtils.put_to_rasp_server('v1/control/change_frequency', payload)
+            response = HttpResponse(reverse('process_result', kwargs={'experiment_id':experiment_id}))
+        else:
+            response = HttpResponseBadRequest()
+
+        return response
+
+    @csrf_exempt
+    def experiment_result(self, request=None, experiment_id=None):
+        accelerations = ExperimentUtils.get_experiment_accelerations(experiment_id)
+        context = {
+            'accelerations': accelerations,
+            'experiment_id': experiment_id,
+        }
+        
+        return render(request, "result.html", context)
+
+    @csrf_exempt
+    def process_result(self, request, experiment_id):
+        if request.method == 'GET':
+            template = "stop_experiment_modal.html"
+            response = render(request, template, {'experiment_id': experiment_id})
+
+        elif request.method == 'POST':
+            accelerations = ExperimentUtils.get_experiment_accelerations(experiment_id)
+            if accelerations:
+                url_name = 'experiment_result'
+            else:   
+                url_name = 'process_result'
+
+            response = HttpResponse(reverse(url_name, kwargs={'experiment_id':experiment_id}))
+
+        return response
+
+    @csrf_exempt
+    def receive_result(self, request):
+        response = HttpResponseBadRequest()
+        if request.body:
+            accelerations = json.loads(request.body.decode('utf8'))
+            experiment = ExperimentUtils.save_data(accelerations, Acceleration)
+            if experiment is not None:
+                response =  HttpResponse(experiment.id)
+
+        return response
+
     def get_sensors(self, request=None):
         response = None
         try:
@@ -209,7 +250,6 @@ class ExperimentView(View):
         return experiment
 
     def get_data_from_jobs(self, formset, request):
-
         empty_job = 0
         try:
             with transaction.atomic():
@@ -242,7 +282,6 @@ class ExperimentView(View):
         return response
 
     def save_job(self, job_data, experiment):
-
         if job_data:
             choose_frequency = job_data['choose_frequency']
             job_time = job_data['job_time']

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% load bootstrap_ui_tags %}
+
+{% block content %}
+
+<div id="charts">
+
+	{% if accelerations %}
+	    {% for experiment_accelerations in accelerations %}
+	    	{% for acceleration in experiment_accelerations %}
+	    		<h4> <i class="fa fa-check-square-o"></i> Acceleration <b>{{ acceleration.x_value }}</b></h4>
+	    	{% endfor %}
+	    {% endfor %}
+	{% endif %}
+</div>
+
+{% endblock %}

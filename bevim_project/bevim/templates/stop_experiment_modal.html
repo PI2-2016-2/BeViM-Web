@@ -1,7 +1,10 @@
+{% extends "base.html" %}
+{% load staticfiles %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% load bootstrap_ui_tags %}
 
+{% block content %}
 <div id="processing_experiment" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -15,13 +18,51 @@
           </p>
       </div>
       <div class="modal-footer">
-        {% row %}
-          {% column md="6" %}
-          {% endcolumn %}
-          {% column md="6" %}
-          {% endcolumn %}
-        {% endrow %}
       </div>
     </div>
   </div>
 </div>
+
+<div id="get_data_url" style="display: none;">
+    {% url 'process_result' experiment_id=experiment_id %}
+</div>
+{% endblock %}
+
+
+{% block body-javascript %}
+    {{ block.super }}
+
+  <script type="text/javascript">
+      $(document).ready(function(){
+        $("#processing_experiment").modal('show');
+        get_result();
+      });
+
+      function get_result(){
+      var url_post = $("#get_data_url").html();
+      $.ajax({
+        type:"POST",
+        url: url_post,
+        data: {},
+          beforeSend: function(xhr, settings) {
+          var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+              xhr.setRequestHeader("X-CSRFToken", token);
+            },
+          success: function(response){
+            var url = response.toString();
+            if(url.includes("processing_data")){
+              console.log("ok");
+              get_result();
+            }
+            else{
+              $("#processing_experiment").modal('hide');
+                window.location.href = response;
+            }
+          }
+      });
+      }
+
+
+  </script>
+
+{% endblock %}
