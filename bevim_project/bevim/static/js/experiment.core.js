@@ -75,7 +75,21 @@ Experiment.prototype.start = function(){
         this.onStart();
     }
 
-    this.startTime = this.startNextTimer();
+    if(this.onTransition != undefined){
+        this.startTime = new Date();
+        this.onTransition(this, true);
+    }else{
+        this.startTime = this.startNextTimer();
+    }
+
+    // outer = this;
+    // (function(onTransition){
+    //    onTransition = function(){
+    //         onTransition();
+    //    }
+    // })(this.onTransition);
+
+
 
     return this.startTime;
 };
@@ -131,4 +145,104 @@ Experiment.prototype.stop = function(stopFunction){
     if(stopFunction){
         stopFunction();
     }
+};
+
+var ExperimentHistory = function(historyDiv){
+    this.historyDiv = historyDiv;
+}
+
+ExperimentHistory.prototype.addEvent = function(content){
+    var previousContent = $("#" + this.historyDiv).html();
+    $("#" + this.historyDiv).html(previousContent + content);
+};
+
+ExperimentHistory.prototype.startExperimentEvent = function(startTime){
+
+    if(startTime == undefined){
+        startTime = new Date();
+    }
+
+    var hours = startTime.getHours();
+    var minutes = startTime.getMinutes();
+    var seconds = startTime.getSeconds();
+
+    var startHtml = "\
+    <article class='panel panel-success panel-outline'> \
+        <div class='panel-heading icon'><i class='fa fa-play'></i></div> \
+        <div class='panel-body'> Experiment started at " + hours + ":" + minutes + ":" + seconds +". \
+        <strong>Firing Job 1...</strong>\
+        </div> \
+    </article>";
+
+    return startHtml;
+};
+
+ExperimentHistory.prototype.pauseExperimentEvent = function(job, pauseTime){
+
+    console.log("-----------------------------job on pause");
+    console.log(job);
+
+    if(pauseTime == undefined){
+        pauseTime = new Date();
+    }
+
+    var hours = pauseTime.getHours();
+    var minutes = pauseTime.getMinutes();
+    var seconds = pauseTime.getSeconds();
+
+    var pauseHtml = "\
+    <article class='panel panel-warning panel-outline'> \
+        <div class='panel-heading icon'><i class='fa fa-pause'></i></div> \
+        <div class='panel-body'> <strong>Firing Job "+ job.order +"</strong>. Experiment paused at "
+        + hours + ":" + minutes + ":" + seconds +" to wait for table reach " + job.frequency + " Hz.</div> \
+    </article>";
+
+    return pauseHtml;
+};
+
+ExperimentHistory.prototype.unpauseExperimentEvent = function(job, unpauseTime){
+
+    if(unpauseTime == undefined){
+        unpauseTime = new Date();
+    }
+
+    var hours = unpauseTime.getHours();
+    var minutes = unpauseTime.getMinutes();
+    var seconds = unpauseTime.getSeconds();
+
+    var unpauseHtml = "\
+    <article class='panel panel-primary panel-outline'> \
+        <div class='panel-heading icon'><i class='fa fa-play-circle'></i></div> \
+        <div class='panel-body'><strong>Initiating Job "+ job.order +"</strong>. Experiment unpaused at "
+        + hours + ":" + minutes + ":" + seconds +", when table reached " + job.frequency + " Hz.</div> \
+    </article>";
+
+    unpauseHtml += "\
+    <article class='panel panel-default panel-outline'> \
+        <div class='panel-heading icon'><i class='fa fa-bolt'></i></div> \
+        <div class='panel-body'>Vibrating at "+ job.frequency +"Hz for "
+        + job.time + " seconds.</div> \
+    </article>";
+
+    return unpauseHtml;
+};
+
+ExperimentHistory.prototype.stopExperimentEvent = function(stopTime){
+
+    if(stopTime == undefined){
+        stopTime = new Date();
+    }
+
+    var hours = stopTime.getHours();
+    var minutes = stopTime.getMinutes();
+    var seconds = stopTime.getSeconds();
+
+    var stopHtml = "\
+    <article class='panel panel-danger panel-outline'> \
+        <div class='panel-heading icon'><i class='fa fa-stop'></i></div> \
+        <div class='panel-body'> Experiment stopped at "
+        + hours + ":" + minutes + ":" + seconds +".</div> \
+    </article>";
+
+    return stopHtml;
 };

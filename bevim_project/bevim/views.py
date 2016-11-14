@@ -128,6 +128,7 @@ class ExperimentView(View):
             i = 1
             for job in jobs:
                 jobs_info[i] = {
+                    'order': i,
                     'job_pk': job.pk,
                     'frequency': job.choose_frequency,
                     'time': job.job_time
