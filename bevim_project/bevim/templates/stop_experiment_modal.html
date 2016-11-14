@@ -39,27 +39,26 @@
       });
 
       function get_result(){
-      var url_post = $("#get_data_url").html();
-      $.ajax({
-        type:"POST",
-        url: url_post,
-        data: {},
-          beforeSend: function(xhr, settings) {
-          var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
-              xhr.setRequestHeader("X-CSRFToken", token);
-            },
-          success: function(response){
-            var url = response.toString();
-            if(url.includes("processing_data")){
-              console.log("ok");
-              get_result();
+        var url_post = $("#get_data_url").html();
+        $.ajax({
+          type:"POST",
+          url: url_post,
+          data: {},
+            beforeSend: function(xhr, settings) {
+            var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+                xhr.setRequestHeader("X-CSRFToken", token);
+              },
+            success: function(response){
+              var url = response.toString();
+              if(url.includes("processing_data")){
+                get_result();
+              }
+              else{
+                $("#processing_experiment").modal('hide');
+                  window.location.href = response;
+              }
             }
-            else{
-              $("#processing_experiment").modal('hide');
-                window.location.href = response;
-            }
-          }
-      });
+        });
       }
 
 

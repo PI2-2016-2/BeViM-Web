@@ -4,17 +4,36 @@
 {% load i18n %}
 {% load bootstrap_ui_tags %}
 
+
 {% block content %}
+<!-- Load c3.css -->
+<link rel="stylesheet" href="{% static 'css/c3.min.css' %}" type="text/css"/>
 
-<div id="charts">
+<!-- Load d3.js and c3.js -->
+<script src="{% static 'js/d3.v3.min.js' %}"></script>
+<script src="{% static 'js/c3.min.js' %}"></script>
 
-	{% if accelerations %}
-	    {% for experiment_accelerations in accelerations %}
-	    	{% for acceleration in experiment_accelerations %}
-	    		<h4> <i class="fa fa-check-square-o"></i> Acceleration <b>{{ acceleration.x_value }}</b></h4>
-	    	{% endfor %}
-	    {% endfor %}
-	{% endif %}
+<div id="accelerations_chart_data" style="display: none;">
+    {{accelerations_chart_data}}
 </div>
+
+<div id="chart"></div>
+
+{% endblock %}
+
+{% block body-javascript %}
+    {{ block.super }}
+
+  <script type="text/javascript">
+      $(document).ready(function(){
+        var accelerations = $("#accelerations_chart_data").html();
+        accelerations = JSON.parse(accelerations);
+		var chart = c3.generate({
+		    data: accelerations,
+		});
+
+      });
+
+  </script>
 
 {% endblock %}

@@ -5,6 +5,7 @@ import requests as api_requests
 from bevim.models import Experiment, Job, Sensor, Acceleration, Amplitude, Frequency, Speed
 from bevim_project.settings import REST_BASE_URL
 from django.db.models.signals import post_save
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 # Util methods - Controller
@@ -63,15 +64,52 @@ class ExperimentUtils:
 
         return experiment
 
-    def get_experiment_accelerations(experiment_id):
+    def get_experiment_result(experiment_id, only_acceleration=False):
         jobs = Job.objects.filter(experiment=experiment_id)
+
         accelerations = []
+        amplitudes = []
+        frequencies = []
+        speeds = []
+    
         for job in jobs:
             job_accelerations = job.acceleration_set.all()
             if job_accelerations:
                 accelerations.append(job_accelerations)
 
-        return accelerations
+                if not only_acceleration:
+                    job_amplitudes = job.amplitude_set.all()
+                    amplitudes.append(job_amplitudes)
+                    job_frequencies = job.frequency_set.all()
+                    frequencies.append(job_frequencies)
+                    job_speeds = job.speed_set.all()
+                    speeds.append(job_speeds)
+
+        result = {
+            'accelerations' : accelerations, 
+            'amplitudes': amplitudes, 
+            'frequencies': frequencies, 
+            'speeds': speeds
+        }
+        return result
+
+    def get_chart_data(result_data):
+        timestamps = ['x']
+        data_values = ['data']
+        for job_data in result_data:
+            for data in job_data:
+                timestamps.append(data.timestamp)
+                data_values.append(data.x_value)
+
+        columns = [timestamps, data_values]
+        chart_data = {
+            'x' : 'x',
+            'columns': columns,
+            # 'type': 'spline'
+        }
+        
+        chart_data = json.dumps(chart_data, cls=DjangoJSONEncoder)
+        return chart_data
 
 class RestUtils:
 
