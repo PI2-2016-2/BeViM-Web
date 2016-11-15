@@ -74,18 +74,19 @@ class ExperimentUtils:
         }
         return result
 
-    def get_chart_data(result_data):
+    def get_chart_data(result_data, chart_description, color):
         timestamps = ['x']
-        data_values = ['data']
+        data_values = [chart_description]
         for job_data in result_data:
             for data in job_data:
                 timestamps.append(data.timestamp)
-                data_values.append(data.x_value) # Get sensor data from axis x
+                data_values.append(data.z_value) # Get sensor data from axis z
 
         columns = [timestamps, data_values]
         chart_data = {
             'x' : 'x',
             'columns': columns,
+            'colors': {chart_description: color}
             # 'type': 'spline'
         }
         

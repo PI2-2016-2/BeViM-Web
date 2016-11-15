@@ -24,15 +24,9 @@ from bevim import protocol
 
 def change_frequency(request):
     new_frequency = request.POST['frequency']
-    experiment = request.POST['experiment']
     job = request.POST['job']
     jobs_info = request.POST['jobs_info']
-    payload = {
-        'frequency': new_frequency,
-        'experiment': experiment,
-        'job': job,
-        'jobs_info': jobs_info
-    }
+    payload = {'frequency': new_frequency, 'job': job, 'jobs_info': jobs_info}
     response = RestUtils.post_to_rasp_server('v1/control/change_frequency', payload)
     return HttpResponse(response.status_code)
 
@@ -168,12 +162,12 @@ class ExperimentView(View):
 
     @csrf_exempt
     def experiment_result(self, request=None, experiment_id=None):
-
+        
         experiment_result = ExperimentUtils.get_experiment_result(experiment_id)
-        accelerations_chart_data = ExperimentUtils.get_chart_data(experiment_result['accelerations'])
-        amplitudes_chart_data = ExperimentUtils.get_chart_data(experiment_result['amplitudes'])
-        frequencies_chart_data = ExperimentUtils.get_chart_data(experiment_result['frequencies'])
-        speeds_chart_data = ExperimentUtils.get_chart_data(experiment_result['speeds'])
+        frequencies_chart_data = ExperimentUtils.get_chart_data(experiment_result['frequencies'], _('Frequency x Time'), '#0080ff')
+        accelerations_chart_data = ExperimentUtils.get_chart_data(experiment_result['accelerations'], _('Acceleration x Time'), '#b30000')
+        amplitudes_chart_data = ExperimentUtils.get_chart_data(experiment_result['amplitudes'], _('Amplitude x Time'), '#ff8000')
+        speeds_chart_data = ExperimentUtils.get_chart_data(experiment_result['speeds'], _('Speed x Time'), '#8000ff')
 
         context = {
             'accelerations_chart_data': accelerations_chart_data,
@@ -182,7 +176,7 @@ class ExperimentView(View):
             'speeds_chart_data': speeds_chart_data,
             'experiment_id': experiment_id,
         }
-
+        
         return render(request, "result.html", context)
 
     @csrf_exempt
@@ -193,17 +187,17 @@ class ExperimentView(View):
             total_time = 0
             for job in jobs:
                 total_time += job.job_time
-
+            
             template = "stop_experiment_modal.html"
             response = render(request, template, {'experiment_id': experiment_id, 'total_time': total_time})
 
         elif request.method == 'POST':
             if experiment.active:
                 url_name = 'process_result'
-            else:
+            else:   
                 url_name = 'experiment_result'
 
-
+                
             response = HttpResponse(reverse(url_name, kwargs={'experiment_id':experiment_id}))
 
         return response

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-28 15:31-0200\n"
+"POT-Creation-Date: 2016-11-15 16:21-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,20 @@ msgstr "Entrar"
 msgid "Logout"
 msgstr "Sair"
 
+#: bevim/templates/found_sensors_list.html:9
+msgid "No sensors found"
+msgstr "Nenhum sensor encontrado"
+
+#: bevim/templates/found_sensors_list.html:9
+msgid "Maybe because of a connection issue. Try reloading the sensors."
+msgstr "Talvez devido a um problema de conexão. Tente atualizar os sensores."
+
+#: bevim/templates/found_sensors_list.html:20
+msgid ""
+"No connection to the server. Could not retrieve the present sensors. Try "
+"again."
+msgstr "Sem conexão com o servidor. Não foi possível recuperar os sensores. Tente novamente."
+
 #: bevim/templates/home.html:19
 msgid "Register"
 msgstr "Cadastrar"
@@ -84,13 +98,38 @@ msgstr "Você confirma os sensores encontrados"
 msgid "Found sensors"
 msgstr "Sensores detectados"
 
-#: bevim/templates/received_sensors_modal.html:29
+#: bevim/templates/received_sensors_modal.html:26
 msgid "RELOAD"
 msgstr "Atualizar"
 
-#: bevim/templates/received_sensors_modal.html:32
+#: bevim/templates/received_sensors_modal.html:29
 msgid "CONFIRM SENSORS"
 msgstr "Confirmar sensores"
+
+#: bevim/templates/result.html:32
+msgid "Charts"
+msgstr "Gráficos"
+
+#: bevim/templates/result.html:35 bevim/views.py:167
+msgid "Frequency x Time"
+msgstr "Frequência x Tempo"
+
+
+#: bevim/templates/result.html:36 bevim/views.py:168
+msgid "Acceleration x Time"
+msgstr "Aceleração x Tempo"
+
+#: bevim/templates/result.html:37 bevim/views.py:169
+msgid "Amplitude x Time"
+msgstr "Amplitude x Tempo"
+
+#: bevim/templates/result.html:38 bevim/views.py:170
+msgid "Speed x Time"
+msgstr "Velocidade x Tempo"
+
+#: bevim/templates/stop_experiment_modal.html:13
+msgid "Processing data"
+msgstr "Processando dados"
 
 #: bevim/tests.py:36
 msgid "Experiment time"
@@ -104,6 +143,10 @@ msgstr ""
 msgid "Certifique-se que este valor seja maior ou igual a 0."
 msgstr ""
 
+#: bevim/tests.py:81 bevim/views.py:95
+msgid "The equipment is in use by another user."
+msgstr "A bancada está em uso por outro usuário."
+
 #: bevim/views.py:58
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
@@ -112,11 +155,7 @@ msgstr "Cadastrado com sucesso!"
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:95
-msgid "The equipment is in use by another user."
-msgstr "A bancada está em uso por outro usuário."
-
-#: bevim/views.py:217
+#: bevim/views.py:290
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."
@@ -127,7 +166,5 @@ msgstr ""
 #~ msgid "Job Time"
 #~ msgstr "Tempo"
 
-#, fuzzy
-#~| msgid "New Experiment"
-#~ msgid "Experiments"
-#~ msgstr "Novo Ensaio"
+# msgid "Experiments"
+# msgstr "Ensaios"

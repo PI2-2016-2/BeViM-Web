@@ -17,7 +17,41 @@
     {{accelerations_chart_data}}
 </div>
 
-<div id="chart"></div>
+<div id="amplitudes_chart_data" style="display: none;">
+    {{amplitudes_chart_data}}
+</div>
+
+<div id="frequencies_chart_data" style="display: none;">
+    {{frequencies_chart_data}}
+</div>
+
+<div id="speeds_chart_data" style="display: none;">
+    {{speeds_chart_data}}
+</div>
+
+<h1><center> {% trans 'Charts' %} </center></h1>
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#frequency" data-toggle="tab" aria-expanded="true">{% trans 'Frequency x Time' %}</a></li>
+  <li class=""><a href="#acceleration" data-toggle="tab" aria-expanded="false">{% trans 'Acceleration x Time' %}</a></li>
+  <li class=""><a href="#amplitude" data-toggle="tab" aria-expanded="false">{% trans 'Amplitude x Time' %}</a></li>
+  <li class=""><a href="#speed" data-toggle="tab" aria-expanded="false">{% trans 'Speed x Time' %}</a></li>
+
+</ul>
+<div id="tabs-content" class="tab-content">
+  <div class="tab-pane fade active in" id="frequency">
+	<div id="frequency_chart"></div>
+  </div>
+  <div class="tab-pane fade" id="acceleration">
+	<div id="acceleration_chart"></div>
+  </div>
+  <div class="tab-pane fade" id="amplitude">
+		<div id="amplitude_chart"></div>
+  </div>
+  <div class="tab-pane fade" id="speed">
+		<div id="speed_chart"></div>
+  </div>
+</div>
 
 {% endblock %}
 
@@ -29,7 +63,29 @@
         var accelerations = $("#accelerations_chart_data").html();
         accelerations = JSON.parse(accelerations);
 		var chart = c3.generate({
+		    bindto: '#acceleration_chart',
 		    data: accelerations,
+		});
+
+		var frequencies = $("#frequencies_chart_data").html();
+        frequencies = JSON.parse(frequencies);
+		chart = c3.generate({
+		    bindto: '#frequency_chart',
+		    data: frequencies,
+		});
+		
+		var amplitudes = $("#amplitudes_chart_data").html();
+        amplitudes = JSON.parse(amplitudes);
+		chart = c3.generate({
+		    bindto: '#amplitude_chart',
+		    data: amplitudes,
+		});
+
+		var speeds = $("#speeds_chart_data").html();
+        speeds = JSON.parse(speeds);
+		chart = c3.generate({
+		    bindto: '#speed_chart',
+		    data: speeds,
 		});
 
       });
