@@ -26,6 +26,10 @@
 <div id="get_data_url" style="display: none;">
     {% url 'process_result' experiment_id=experiment_id %}
 </div>
+
+<div id="total_time" style="display: none;">
+    {{total_time}}
+</div>
 {% endblock %}
 
 
@@ -51,7 +55,8 @@
             success: function(response){
               var url = response.toString();
               if(url.includes("processing_data")){
-                get_result();
+                var time = $("#total_time").html();
+                setTimeout(get_result, (time*1000));
               }
               else{
                 $("#processing_experiment").modal('hide');
