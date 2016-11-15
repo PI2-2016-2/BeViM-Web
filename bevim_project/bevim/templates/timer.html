@@ -29,75 +29,85 @@
     	{{ jobs_info }}
 	</div>
 
-	<div class="row">
-		<div class="col-md-4 col-md-offset-4">
-
-			<div class="panel panel-primary">
-	            <div class="panel-heading">
-					<h2 class="panel-title"><b>Tempo do Ensaio</b></h2>
-				    <br>
-	                <div class="row">
-	                    <div class="col-xs-3">
-	                        <span style="font-size:5em;" class="glyphicon glyphicon-time"></span>
-	                    </div>
-	                    <div class="col-xs-9 text-right">
-	                        <div class="huge"><h1 id="experimentTime"></h1></div>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="experiment_history" class="timeline">
+        <div class="line text-muted"></div>
         </div>
-		<div class="col-md-4">
-		</div>
-	</div>
+    </div>
+    <div class="col-md-6">
+    	<div class="row">
+    		<div class="col-md-4 col-md-offset-4">
 
-	<div class="row">
-		<div class="col-md-4">
-			<div class="panel panel-primary">
-		            <div class="panel-heading">
-					    <h2 class="panel-title"><b>Hora Inicial</b></h2>
-		            </div>
+    			<div class="panel panel-primary">
+    	            <div class="panel-heading">
+    					<h2 class="panel-title"><b>Tempo do Ensaio</b></h2>
+    				    <br>
+    	                <div class="row">
+    	                    <div class="col-xs-3">
+    	                        <span style="font-size:2em;" class="glyphicon glyphicon-time"></span>
+    	                    </div>
+    	                    <div class="col-xs-9 text-right">
+    	                        <div class="huge"><h3 id="experimentTime"></h3></div>
+    	                    </div>
+    	                </div>
+    	            </div>
+    	        </div>
+            </div>
+    		<div class="col-md-4">
+    		</div>
+    	</div>
+
+    	<div class="row">
+    		<div class="col-md-4">
+    			<div class="panel panel-primary">
+    		            <div class="panel-heading">
+    					    <h2 class="panel-title"><b>Hora Inicial</b></h2>
+    		            </div>
+                            <div class="huge text-center">
+        						<h1 id="initialTime"></h1>
+                            </div>
+    		        </div>
+    		  	</div>
+    		<div class="col-md-4">
+
+    			    <div class="panel panel-primary">
+    	            <div class="panel-heading">
+    				    <h2 class="panel-title"><b>Hora Atual</b></h2>
+    	            </div>
+    	                <div class="huge text-center">
+    	                	<h1 id="elapsedTime"></h1>
+    	                </div>
+    	        </div>
+    	    </div>
+    		<div class="col-md-4">
+    			<div class="panel panel-primary">
+    	            <div class="panel-heading">
+    				    <h2 class="panel-title"><b>Hora Final</b></h2>
+    	            </div>
                         <div class="huge text-center">
-    						<h1 id="initialTime"></h1>
+    						<h1 id="finalTime"><i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i></h1>
                         </div>
 		        </div>
-		  	</div>
-		<div class="col-md-4">
+            </div>
 
-			    <div class="panel panel-primary">
-	            <div class="panel-heading">
-				    <h2 class="panel-title"><b>Hora Atual</b></h2>
-	            </div>
-	                <div class="huge text-center">
-	                	<h1 id="elapsedTime"></h1>
-	                </div>
-	        </div>
-	    </div>
-		<div class="col-md-4">
-			<div class="panel panel-primary">
-	            <div class="panel-heading">
-				    <h2 class="panel-title"><b>Hora Final</b></h2>
-	            </div>
-                    <div class="huge text-center">
-						<h1 id="finalTime"><i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i></h1>
-                    </div>
-	        </div>
-		</div>
-		{% csrf_token %}
-
-		<div id="stop_experiment_url" style="display: none;">
-        	{% url 'stop_experiment' experiment_id%}
-	    </div>
-	    <div id="change_frequency_url" style="display: none;">
-        	{% url 'change_frequency' %}
-	    </div>
-        <div id="consult_frequency_url" style="display: none;">
-            {% url 'consult_frequency' %}
         </div>
-	</div>
+    </div>
+</div>
 
-    <div id="experiment_history" class="timeline">
-        <div class="line text-muted"></div>
+    {% csrf_token %}
+
+    <div id="experiment_id" style="display: none;">
+        {{ experiment_id }}
+    </div>
+    <div id="stop_experiment_url" style="display: none;">
+        {% url 'stop_experiment' experiment_id%}
+    </div>
+    <div id="change_frequency_url" style="display: none;">
+        {% url 'change_frequency' %}
+    </div>
+    <div id="consult_frequency_url" style="display: none;">
+        {% url 'consult_frequency' %}
     </div>
 
     <script type="text/javascript">
@@ -247,11 +257,12 @@
 			var job_data = jobs[job];
 
 			//**** Make a request here to the rapsberry server to change the frequency ****//
-			var url = $("#change_frequency_url").html();
+            var url = $("#change_frequency_url").html();
+			var experiment_id = $("#experiment_id").html();
 			$.ajax({
 				type:"POST",
 				url: url,
-				data: {job: job, frequency: job_data.frequency, jobs_info: jobsInfoString},
+				data: {experiment: experiment_id, job: job, frequency: job_data.frequency, jobs_info: jobsInfoString},
 			    beforeSend: function(xhr, settings) {
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);
