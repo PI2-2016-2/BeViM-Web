@@ -247,6 +247,18 @@ class ExperimentView(View):
         finally:
             return response
 
+    def show_experiments(self, request):
+        user = request.user
+        experiments = user.experiment_set.all()
+        experiments = Experiment.parse_data_to_show(experiments)
+        template = "experiments.html"        
+        context = {
+            'experiments': experiments
+        }
+        response = render(request, template, context)        
+
+        return response
+
     def create_experiment(self, user):
         user_experiments = Experiment.objects.filter(user_id=user.pk)
         if user_experiments:

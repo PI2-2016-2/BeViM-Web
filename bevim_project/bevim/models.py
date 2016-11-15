@@ -15,6 +15,18 @@ class Experiment(models.Model):
     def __str__(self):
         return str(self.number)
 
+    @staticmethod
+    def parse_data_to_show(experiments):
+        
+        experiments_with_correct_data = []
+        for experiment in experiments:
+            number = experiment.number
+            experiment.number = "{0:0>5}".format(number)
+            date = experiment.date
+            experiment.date = date.strftime("%d/%m/%y")
+            experiments_with_correct_data.append(experiment)
+
+        return experiments_with_correct_data
 
 class Job(models.Model):
     choose_frequency = models.PositiveSmallIntegerField(_('Frequency'), 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 16:21-0200\n"
+"POT-Creation-Date: 2016-11-15 16:38-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,15 +32,14 @@ msgstr "Confirmação de Senha"
 
 #: bevim/forms.py:18
 #, fuzzy
-#| msgid "Enter the same password as above, for verification."
 msgid "Enter the same password as above for verification."
 msgstr "Digite a mesma senha de cima, para verificação"
 
-#: bevim/models.py:20
+#: bevim/models.py:32
 msgid "Frequency"
 msgstr "Frequência"
 
-#: bevim/models.py:22
+#: bevim/models.py:34
 msgid "Time in seconds"
 msgstr "Tempo em segundos"
 
@@ -48,13 +47,21 @@ msgstr "Tempo em segundos"
 msgid "New Experiment"
 msgstr "Novo Ensaio"
 
-#: bevim/templates/base.html:35 bevim/templates/login.html:18
+#: bevim/templates/base.html:31
+msgid "Experiments"
+msgstr "Ensaios"
+
+#: bevim/templates/base.html:38 bevim/templates/login.html:18
 msgid "Login"
 msgstr "Entrar"
 
-#: bevim/templates/base.html:43
+#: bevim/templates/base.html:46
 msgid "Logout"
 msgstr "Sair"
+
+#: bevim/templates/experiments.html:28
+msgid "See result"
+msgstr "Ver resultado"
 
 #: bevim/templates/found_sensors_list.html:9
 msgid "No sensors found"
@@ -68,7 +75,9 @@ msgstr "Talvez devido a um problema de conexão. Tente atualizar os sensores."
 msgid ""
 "No connection to the server. Could not retrieve the present sensors. Try "
 "again."
-msgstr "Sem conexão com o servidor. Não foi possível recuperar os sensores. Tente novamente."
+msgstr ""
+"Sem conexão com o servidor. Não foi possível recuperar os sensores. Tente "
+"novamente."
 
 #: bevim/templates/home.html:19
 msgid "Register"
@@ -114,7 +123,6 @@ msgstr "Gráficos"
 msgid "Frequency x Time"
 msgstr "Frequência x Tempo"
 
-
 #: bevim/templates/result.html:36 bevim/views.py:168
 msgid "Acceleration x Time"
 msgstr "Aceleração x Tempo"
@@ -155,7 +163,7 @@ msgstr "Cadastrado com sucesso!"
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:290
+#: bevim/views.py:302
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."
@@ -165,6 +173,3 @@ msgstr ""
 
 #~ msgid "Job Time"
 #~ msgstr "Tempo"
-
-# msgid "Experiments"
-# msgstr "Ensaios"
