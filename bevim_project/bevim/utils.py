@@ -1,3 +1,5 @@
+from scipy import integrate
+
 from django.db import connection, IntegrityError, transaction
 import json
 import requests as api_requests
@@ -11,6 +13,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 # Util methods - Controller
 
 class ExperimentUtils:
+
+    def numerical_integration(y_array, x_array):
+        return integrate.cumtrapz(y_array, x_array)
 
     def populate_database(experiment):
         jobs = experiment.job_set.all()
