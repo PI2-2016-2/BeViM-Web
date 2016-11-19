@@ -9,4 +9,4 @@ START_EXPERIMENT_FLAG = '-1'
 STOP_EXPERIMENT_FLAG = '-1'
 
 # This flag is used to ask to the control system the list of the present sensors
-GET_AVAILABLE_SENSORS_FLAG = '-2'
+GET_AVAILABLE_SENSORS_FLAG = bytes([2])

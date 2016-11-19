@@ -29,71 +29,73 @@
     	{{ jobs_info }}
 	</div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div id="experiment_history" class="timeline">
-        <div class="line text-muted"></div>
-        </div>
-    </div>
-    <div class="col-md-6">
-    	<div class="row">
-    		<div class="col-md-4 col-md-offset-4">
-
-    			<div class="panel panel-primary">
-    	            <div class="panel-heading">
-    					<h2 class="panel-title"><b>Tempo do Ensaio</b></h2>
-    				    <br>
-    	                <div class="row">
-    	                    <div class="col-xs-3">
-    	                        <span style="font-size:2em;" class="glyphicon glyphicon-time"></span>
-    	                    </div>
-    	                    <div class="col-xs-9 text-right">
-    	                        <div class="huge"><h3 id="experimentTime"></h3></div>
-    	                    </div>
-    	                </div>
-    	            </div>
-    	        </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>{% trans 'Experiment history' %}</h3>
+            <br>
+            <div id="experiment_history" class="timeline">
+                <div class="line text-muted"></div>
             </div>
-    		<div class="col-md-4">
-    		</div>
-    	</div>
+        </div>
+        <div class="col-md-6">
+        	<div class="row">
+        		<div class="col-md-4 col-md-offset-4">
 
-    	<div class="row">
-    		<div class="col-md-4">
-    			<div class="panel panel-primary">
-    		            <div class="panel-heading">
-    					    <h2 class="panel-title"><b>Hora Inicial</b></h2>
-    		            </div>
+        			<div class="panel panel-primary">
+        	            <div class="panel-heading">
+        					<h2 class="panel-title"><b>Tempo do Ensaio</b></h2>
+        				    <br>
+        	                <div class="row">
+        	                    <div class="col-xs-3">
+        	                        <span style="font-size:2em;" class="glyphicon glyphicon-time"></span>
+        	                    </div>
+        	                    <div class="col-xs-9 text-right">
+        	                        <div class="huge"><h3 id="experimentTime"></h3></div>
+        	                    </div>
+        	                </div>
+        	            </div>
+        	        </div>
+                </div>
+        		<div class="col-md-4">
+        		</div>
+        	</div>
+
+        	<div class="row">
+        		<div class="col-md-4">
+        			<div class="panel panel-primary">
+        		            <div class="panel-heading">
+        					    <h2 class="panel-title"><b>Hora Inicial</b></h2>
+        		            </div>
+                                <div class="huge text-center">
+            						<h1 id="initialTime"></h1>
+                                </div>
+        		        </div>
+        		  	</div>
+        		<div class="col-md-4">
+
+        			    <div class="panel panel-primary">
+        	            <div class="panel-heading">
+        				    <h2 class="panel-title"><b>Hora Atual</b></h2>
+        	            </div>
+        	                <div class="huge text-center">
+        	                	<h1 id="elapsedTime"></h1>
+        	                </div>
+        	        </div>
+        	    </div>
+        		<div class="col-md-4">
+        			<div class="panel panel-primary">
+        	            <div class="panel-heading">
+        				    <h2 class="panel-title"><b>Hora Final</b></h2>
+        	            </div>
                             <div class="huge text-center">
-        						<h1 id="initialTime"></h1>
+        						<h1 id="finalTime"><i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i></h1>
                             </div>
     		        </div>
-    		  	</div>
-    		<div class="col-md-4">
+                </div>
 
-    			    <div class="panel panel-primary">
-    	            <div class="panel-heading">
-    				    <h2 class="panel-title"><b>Hora Atual</b></h2>
-    	            </div>
-    	                <div class="huge text-center">
-    	                	<h1 id="elapsedTime"></h1>
-    	                </div>
-    	        </div>
-    	    </div>
-    		<div class="col-md-4">
-    			<div class="panel panel-primary">
-    	            <div class="panel-heading">
-    				    <h2 class="panel-title"><b>Hora Final</b></h2>
-    	            </div>
-                        <div class="huge text-center">
-    						<h1 id="finalTime"><i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i></h1>
-                        </div>
-		        </div>
             </div>
-
         </div>
     </div>
-</div>
 
     {% csrf_token %}
 
@@ -177,6 +179,8 @@
                 },
                 success: function(response){
                     frequency = (JSON.parse(response)).frequency;
+                    console.log("Frequency from RASP ----------------------");
+                    console.log(frequency);
                 },
                 async:false
             });
@@ -195,23 +199,13 @@
             // Fire the job to the next timer
             fireJob(job);
 
-            var error = 2;
             currentFrequency = consultTableFrequency();
-
-            console.log("currentFrequency:");
-            console.log(currentFrequency);
 
             var jobs = jobsInfo.jobs;
             var job_data = jobs[job];
             var job_frequency = job_data.frequency;
 
-            var reachedRightFrequency = (currentFrequency != null)
-                && (
-                    currentFrequency > (job_frequency - error)
-                    // && currentFrequency < (job_frequency + error)
-                );
-
-            if(reachedRightFrequency){
+            if(currentFrequency){
 
                 createAlert("experiment_status", "info", "Frequency reached, keeping on...", true);
 
@@ -226,7 +220,7 @@
 
         experiment = new Experiment(
             function(){
-                alert("Experiment started!");
+                // alert("Experiment started!");
             },
             stopUpdate,
             transition
@@ -271,7 +265,7 @@
                     var CONTROL_SYSTEM_IS_DOWN = "500";
 					if (response == CONTROL_SYSTEM_IS_DOWN){
 						// In this case the control system is down, so stop the experiment
-						createAlert("status_message", "danger", "Não foi possível realizar a comunicação com o sistema de controle. Tente novamente.");
+						createAlert("status_message", "danger", "Não foi' possível realizar a comunicação com o sistema de controle. Tente novamente.", true);
 						experiment.stop();
 					}
 				}

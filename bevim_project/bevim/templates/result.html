@@ -29,7 +29,7 @@
     {{speeds_chart_data}}
 </div>
 
-<h1><center> {% trans 'Charts' %} </center></h1>
+<h1><center> {% trans 'Experiment results' %} </center></h1>
 
 <ul class="nav nav-tabs">
   <li class="active"><a href="#frequency" data-toggle="tab" aria-expanded="true">{% trans 'Frequency x Time' %}</a></li>
@@ -73,7 +73,7 @@
 		    bindto: '#frequency_chart',
 		    data: frequencies,
 		});
-		
+
 		var amplitudes = $("#amplitudes_chart_data").html();
         amplitudes = JSON.parse(amplitudes);
 		chart = c3.generate({

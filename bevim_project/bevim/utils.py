@@ -58,23 +58,23 @@ class ExperimentUtils:
         amplitudes = []
         frequencies = []
         speeds = []
-    
+
         for job in jobs:
             job_accelerations = job.acceleration_set.all()
             if job_accelerations:
                 job_amplitudes = job.amplitude_set.all()
                 job_frequencies = job.frequency_set.all()
                 job_speeds = job.speed_set.all()
-                
+
                 accelerations.append(job_accelerations)
                 amplitudes.append(job_amplitudes)
                 frequencies.append(job_frequencies)
                 speeds.append(job_speeds)
 
         result = {
-            'accelerations' : accelerations, 
-            'amplitudes': amplitudes, 
-            'frequencies': frequencies, 
+            'accelerations' : accelerations,
+            'amplitudes': amplitudes,
+            'frequencies': frequencies,
             'speeds': speeds
         }
         return result
@@ -94,7 +94,7 @@ class ExperimentUtils:
             'colors': {chart_description: color}
             # 'type': 'spline'
         }
-        
+
         chart_data = json.dumps(chart_data, cls=DjangoJSONEncoder)
         return chart_data
 
@@ -103,7 +103,7 @@ class RestUtils:
     TIMEOUT = 15 # In seconds
 
     @classmethod
-    def post_to_rasp_server(cls, url, data, headers=None):
+    def post_to_rasp_server(cls, url, data=None, headers=None):
         url_to_rest = REST_BASE_URL + url
         if headers is None:
             headers = {'content-type': 'application/json'}
