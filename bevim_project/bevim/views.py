@@ -16,7 +16,7 @@ import json
 import requests
 
 from bevim.forms import UserForm, JobForm
-from bevim.models import Experiment, Job, Sensor, Acceleration
+from bevim.models import Experiment, Job, Sensor, Acceleration, Speed, Amplitude
 from bevim import tasks
 from bevim.utils import ExperimentUtils, RestUtils
 from bevim import protocol
@@ -80,6 +80,8 @@ class HomeView(View):
 
 
 class ExperimentView(View):
+
+    accelerations = []
 
     http_method_names = [u'post', u'get']
     template = "new_experiment.html"
@@ -167,6 +169,7 @@ class ExperimentView(View):
 
     @csrf_exempt
     def experiment_result(self, request=None, experiment_id=None):
+
         experiment_result = ExperimentUtils.get_experiment_result(experiment_id)
         frequencies_chart_data = ExperimentUtils.get_chart_data(experiment_result['frequencies'], _('Frequency x Time'), '#0080ff')
         accelerations_chart_data = ExperimentUtils.get_chart_data(experiment_result['accelerations'], _('Acceleration x Time'), '#b30000')
@@ -194,7 +197,7 @@ class ExperimentView(View):
             total_time = 0
             for job in jobs:
                 total_time += job.job_time
-            
+
             template = "stop_experiment.html"
             response = render(request, template, {'experiment_id': experiment_id, 'total_time': total_time})
 
@@ -213,8 +216,17 @@ class ExperimentView(View):
     def receive_result(self, request):
         response = HttpResponseBadRequest()
         if request.body:
+            # Get data
             accelerations = json.loads(request.body.decode('utf8'))
+            speeds = ExperimentUtils.process_data(accelerations)
+            amplitudes = ExperimentUtils.process_data(speeds)
+
+            # Saving data
             experiment = ExperimentUtils.save_data(accelerations, Acceleration)
+            ExperimentUtils.save_data(speeds, Speed)
+            ExperimentUtils.save_data(amplitudes, Amplitude)
+
+            # End experiment
             ExperimentUtils.free_equipment(experiment.id)
             if experiment is not None:
                 response =  HttpResponse(experiment.id)

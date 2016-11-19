@@ -58,9 +58,9 @@ class Sensor(models.Model):
 
 class Data(models.Model):
     sensor = models.ForeignKey(Sensor, verbose_name='Sensor')
-    x_value = models.DecimalField(max_digits=4, decimal_places=2)
-    y_value = models.DecimalField(max_digits=4, decimal_places=2)
-    z_value = models.DecimalField(max_digits=4, decimal_places=2)
+    x_value = models.DecimalField(max_digits=10, decimal_places=2)
+    y_value = models.DecimalField(max_digits=10, decimal_places=2)
+    z_value = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DecimalField(max_digits=17, decimal_places=2 )
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
