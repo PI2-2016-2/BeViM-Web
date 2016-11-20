@@ -17,7 +17,7 @@ class Experiment(models.Model):
 
     @staticmethod
     def parse_data_to_show(experiments):
-        
+
         experiments_with_correct_data = []
         for experiment in experiments:
             number = experiment.number
@@ -29,7 +29,7 @@ class Experiment(models.Model):
         return experiments_with_correct_data
 
 class Job(models.Model):
-    choose_frequency = models.PositiveSmallIntegerField(_('Frequency'), 
+    choose_frequency = models.PositiveSmallIntegerField(_('Frequency'),
         validators=[MaxValueValidator(100)])
     job_time = models.PositiveSmallIntegerField(_('Time in seconds'))
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
@@ -58,9 +58,9 @@ class Sensor(models.Model):
 
 class Data(models.Model):
     sensor = models.ForeignKey(Sensor, verbose_name='Sensor')
-    x_value = models.DecimalField(max_digits=10, decimal_places=2)
-    y_value = models.DecimalField(max_digits=10, decimal_places=2)
-    z_value = models.DecimalField(max_digits=10, decimal_places=2)
+    x_value = models.DecimalField(max_digits=30, decimal_places=2)
+    y_value = models.DecimalField(max_digits=30, decimal_places=2)
+    z_value = models.DecimalField(max_digits=30, decimal_places=2)
     timestamp = models.DecimalField(max_digits=17, decimal_places=2 )
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 

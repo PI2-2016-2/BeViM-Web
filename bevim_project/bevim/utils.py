@@ -94,6 +94,7 @@ class ExperimentUtils:
         x_values = []
         y_values = []
         z_values = []
+
         for data in data_array:
             timestamps.append(data[4])
             x_values.append(int(data[1]))
@@ -103,19 +104,21 @@ class ExperimentUtils:
         data_processed_x_axis = integrate.cumtrapz(x_values, timestamps, initial=0)
         data_processed_y_axis = integrate.cumtrapz(y_values, timestamps, initial=0)
         data_processed_z_axis = integrate.cumtrapz(z_values, timestamps, initial=0)
-        data_processed = ExperimentUtils.format_integral_array(data_processed_x_axis, data_processed_y_axis, data_processed_z_axis, data_array)
+        data_processed = ExperimentUtils.format_integral_array(data_processed_x_axis, data_processed_y_axis, data_processed_z_axis, data_array[:])
 
         return data_processed
 
     def format_integral_array(data_processed_x_axis, data_processed_y_axis, data_processed_z_axis, data_array):
         i = 0
-        for data in data_array:
+
+        data_processed = data_array[:]
+        for data in data_processed:
             data[1] = data_processed_x_axis[i]
             data[2] = data_processed_y_axis[i]
             data[3] = data_processed_z_axis[i]
             i += 1
 
-        return data_array
+        return data_processed
 
 class RestUtils:
 

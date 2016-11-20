@@ -104,7 +104,7 @@ class ExperimentView(View):
         else:
             busy_equipment = False
         self.context['formset'] = self.JobFormSet
-        self.context['busy_equipment'] = busy_equipment
+        self.context['busy_equipment'] = False
         self.context['sensors'] = self.get_sensors()
         return render(request, self.template, self.context)
 
@@ -218,13 +218,15 @@ class ExperimentView(View):
         if request.body:
             # Get data
             accelerations = json.loads(request.body.decode('utf8'))
-            speeds = ExperimentUtils.process_data(accelerations)
-            amplitudes = ExperimentUtils.process_data(speeds)
-
-            # Saving data
             experiment = ExperimentUtils.save_data(accelerations, Acceleration)
+
+            speeds = ExperimentUtils.process_data(accelerations)
             ExperimentUtils.save_data(speeds, Speed)
+
+            amplitudes = ExperimentUtils.process_data(speeds)
             ExperimentUtils.save_data(amplitudes, Amplitude)
+
+            print(accelerations)
 
             # End experiment
             ExperimentUtils.free_equipment(experiment.id)
