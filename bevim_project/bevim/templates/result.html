@@ -29,8 +29,12 @@
     {{speeds_chart_data}}
 </div>
 
-<h1><center> {% trans 'Experiment results' %} </center></h1>
+<div id="initial_timestamps" style="display: none;">
+    {{initial_timestamp}}
+</div>
 
+
+<h1><center> {% trans 'Experiment results' %} </center></h1>
 <ul class="nav nav-tabs">
   <li class="active"><a href="#frequency" data-toggle="tab" aria-expanded="true">{% trans 'Frequency x Time' %}</a></li>
   <li class=""><a href="#acceleration" data-toggle="tab" aria-expanded="false">{% trans 'Acceleration x Time' %}</a></li>
@@ -39,18 +43,19 @@
 
 </ul>
 <div id="tabs-content" class="tab-content">
-  <div class="tab-pane fade active in" id="frequency">
-	<div id="frequency_chart"></div>
-  </div>
-  <div class="tab-pane fade" id="acceleration">
-	<div id="acceleration_chart"></div>
-  </div>
-  <div class="tab-pane fade" id="amplitude">
-		<div id="amplitude_chart"></div>
-  </div>
-  <div class="tab-pane fade" id="speed">
-		<div id="speed_chart"></div>
-  </div>
+    <div class="tab-pane fade active in" id="frequency">
+    {% include "show_charts.html" with jobs_quantity=jobs_quantity chart_id="frequency_chart"%}
+    </div>
+    <div class="tab-pane fade" id="acceleration">
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="acceleration_chart"%}
+      </div>
+      <div class="tab-pane fade" id="speed">
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="speed_chart"%}
+      </div>
+      <div class="tab-pane fade" id="amplitude">
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="amplitude_chart"%}
+      </div>
+
 </div>
 
 {% endblock %}
@@ -59,36 +64,98 @@
     {{ block.super }}
 
   <script type="text/javascript">
-      $(document).ready(function(){
-        var accelerations = $("#accelerations_chart_data").html();
-        accelerations = JSON.parse(accelerations);
-		var chart = c3.generate({
-		    bindto: '#acceleration_chart',
-		    data: accelerations,
-		});
+    $(document).ready(function(){
 
-		var frequencies = $("#frequencies_chart_data").html();
-        frequencies = JSON.parse(frequencies);
-		chart = c3.generate({
-		    bindto: '#frequency_chart',
-		    data: frequencies,
-		});
+      var data = $("#accelerations_chart_data").html();
+      data = JSON.parse(data);
+      showCharts(data, '#acceleration_chart');
 
-		var amplitudes = $("#amplitudes_chart_data").html();
-        amplitudes = JSON.parse(amplitudes);
-		chart = c3.generate({
-		    bindto: '#amplitude_chart',
-		    data: amplitudes,
-		});
+      data = $("#frequencies_chart_data").html();
+      data = JSON.parse(data);
+      showCharts(data, '#frequency_chart');
 
-		var speeds = $("#speeds_chart_data").html();
-        speeds = JSON.parse(speeds);
-		chart = c3.generate({
-		    bindto: '#speed_chart',
-		    data: speeds,
-		});
+      data = $("#amplitudes_chart_data").html();
+      data = JSON.parse(data);
+      showCharts(data, '#amplitude_chart');
 
-      });
+      data = $("#speeds_chart_data").html();
+      data = JSON.parse(data);
+      showCharts(data, '#speed_chart');
+
+    });
+
+    function showCharts(data, bindTo){
+        var experimentChart = c3.generate({
+          bindto: bindTo,
+          data: data,
+        });
+
+        var initialTimestamps = $("#initial_timestamps").html();
+        initialTimestamps = JSON.parse(initialTimestamps);
+        var jobsQuantity = initialTimestamps.length;
+        
+        if (jobsQuantity > 1){
+            showJobsCharts(data, bindTo, initialTimestamps, jobsQuantity);
+        }
+    }
+
+    function showJobsCharts(data, bindTo, initialTimestamps, jobsQuantity){
+        var jobChart = null;
+        var jobsData = formArrayOfJobsData(initialTimestamps, jobsQuantity, data);
+
+        chartsData = {
+            'x': "x",
+            'colors' : data.colors,
+        };
+        for (i=0;i < jobsQuantity;i++){
+            chartsData['columns'] = jobsData[i];
+            console.log(chartsData);
+            jobChart = c3.generate({
+              bindto: bindTo + "_" + i,
+              data: chartsData
+            });
+        }
+        
+    }
+
+    function formArrayOfJobsData(initialTimestamps, jobsQuantity, data){
+
+        var title = data.columns[1][0];
+        var jobs_data = {}
+
+        var timestamps = data.columns[0];
+        var values = data.columns[1];
+        initialTimestamps.push(values.length);
+        
+        var jobsData = {};
+
+        var last_position = 0;
+        var i = 0
+        if (jobsQuantity > 1){
+            while (i < jobsQuantity){
+                var jobsDataValues = [];
+                var jobsDataTimestamps = [];    
+                var job_position = timestamps.indexOf(initialTimestamps[i]);
+                var next_job_position = timestamps.indexOf(initialTimestamps[i+1]);
+                jobsDataTimestamps.push(timestamps.slice(job_position, next_job_position));
+                jobsDataValues.push(values.slice(job_position, next_job_position));
+
+                jobsDataTimestamps[0].unshift('x');
+                jobsDataValues[0].unshift(title);
+
+                jobsData[i] = [jobsDataTimestamps[0], jobsDataValues[0]];
+                i++;
+            }
+        }
+        else{
+            jobsDataTimestamps = timestamps;
+            jobsDataValues = values;
+
+            jobsData[0] = [jobsDataTimestamps[0], jobsDataValues[0]];
+        }
+        
+        return jobsData;
+    }
 
   </script>
 

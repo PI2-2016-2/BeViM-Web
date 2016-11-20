@@ -5,6 +5,7 @@
 {% load bootstrap_ui_tags %}
 
 {% block content %}
+<link href="{% static 'css/homepage.css' %}" media="screen" rel="stylesheet" type="text/css">
 
 {% column lg="6" md_offset="3"%}
 {% if not user.is_authenticated %}
@@ -22,7 +23,33 @@
 	</center>
 
 	</form>
-{% endif %}
-{% endcolumn %}
+{% else %}
+<center><img src="{% static "images/base.png" %}" alt="logo" width="50%" height="50%"/></center>
+<hr>
+{% buttons %}
+	{% row %}
 
+	{% column md="6"%}
+		<div class="experiment_buttons">
+    		<center><a href="{% url 'new_experiment'%}">
+    			<img src="{% static "images/play_icon.png" %}" alt="play_icon"/>
+    			<p class="button_description">{% trans 'New Experiment' %}</p>
+    		</a></center>
+		</div>
+	{% endcolumn %}
+	{% column md="6"%}
+		<div class="experiment_buttons">
+    		<center><a href="{% url 'experiments'%}">
+    			<img src="{% static "images/chart_icon.png" %}" alt="chart_icon"/>
+    			<p class="button_description">{% trans 'Experiments' %}</p>
+    		</a></center>
+		</div>
+		
+		
+	{% endcolumn %}
+    {% endrow %}
+{% endbuttons %}
+{% endif %}
+
+{% endcolumn %}
 {% endblock %}

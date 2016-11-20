@@ -123,7 +123,6 @@ class ExperimentView(View):
 
     @method_decorator(login_required)
     def show_timer(self, request, experiment_id=None):
-
         if experiment_id is not None:
             experiment = Experiment.objects.get(pk=experiment_id)
             jobs = experiment.job_set.all()
@@ -168,19 +167,21 @@ class ExperimentView(View):
 
     @csrf_exempt
     def experiment_result(self, request=None, experiment_id=None):
-
         experiment_result = ExperimentUtils.get_experiment_result(experiment_id)
         frequencies_chart_data = ExperimentUtils.get_chart_data(experiment_result['frequencies'], _('Frequency x Time'), '#0080ff')
         accelerations_chart_data = ExperimentUtils.get_chart_data(experiment_result['accelerations'], _('Acceleration x Time'), '#b30000')
         amplitudes_chart_data = ExperimentUtils.get_chart_data(experiment_result['amplitudes'], _('Amplitude x Time'), '#ff8000')
         speeds_chart_data = ExperimentUtils.get_chart_data(experiment_result['speeds'], _('Speed x Time'), '#8000ff')
 
+        initial_timestamp = json.dumps(experiment_result['jobs_initial_timestamp'])
         context = {
             'accelerations_chart_data': accelerations_chart_data,
             'amplitudes_chart_data': amplitudes_chart_data,
             'frequencies_chart_data': frequencies_chart_data,
             'speeds_chart_data': speeds_chart_data,
             'experiment_id': experiment_id,
+            'initial_timestamp': initial_timestamp,
+            'jobs_quantity': len(experiment_result['jobs_initial_timestamp'])
         }
 
         return render(request, "result.html", context)
@@ -193,8 +194,8 @@ class ExperimentView(View):
             total_time = 0
             for job in jobs:
                 total_time += job.job_time
-
-            template = "stop_experiment_modal.html"
+            
+            template = "stop_experiment.html"
             response = render(request, template, {'experiment_id': experiment_id, 'total_time': total_time})
 
         elif request.method == 'POST':

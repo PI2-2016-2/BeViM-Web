@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 16:38-0200\n"
+"POT-Creation-Date: 2016-11-19 22:04-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,11 +43,11 @@ msgstr "Frequência"
 msgid "Time in seconds"
 msgstr "Tempo em segundos"
 
-#: bevim/templates/base.html:28
+#: bevim/templates/base.html:28 bevim/templates/home.html:36
 msgid "New Experiment"
 msgstr "Novo Ensaio"
 
-#: bevim/templates/base.html:31
+#: bevim/templates/base.html:31 bevim/templates/home.html:44
 msgid "Experiments"
 msgstr "Ensaios"
 
@@ -79,7 +79,7 @@ msgstr ""
 "Sem conexão com o servidor. Não foi possível recuperar os sensores. Tente "
 "novamente."
 
-#: bevim/templates/home.html:19
+#: bevim/templates/home.html:20
 msgid "Register"
 msgstr "Cadastrar"
 
@@ -116,28 +116,45 @@ msgid "CONFIRM SENSORS"
 msgstr "Confirmar sensores"
 
 #: bevim/templates/result.html:32
+#, fuzzy
+msgid "Experiment results"
+msgstr "Gráficos"
+
+#: bevim/templates/result.html:38
 msgid "Charts"
 msgstr "Gráficos"
 
-#: bevim/templates/result.html:35 bevim/views.py:167
+#: bevim/templates/result.html:40 bevim/views.py:171
 msgid "Frequency x Time"
 msgstr "Frequência x Tempo"
 
-#: bevim/templates/result.html:36 bevim/views.py:168
+#: bevim/templates/result.html:41 bevim/views.py:172
 msgid "Acceleration x Time"
 msgstr "Aceleração x Tempo"
 
-#: bevim/templates/result.html:37 bevim/views.py:169
+#: bevim/templates/result.html:42 bevim/views.py:173
 msgid "Amplitude x Time"
 msgstr "Amplitude x Tempo"
 
-#: bevim/templates/result.html:38 bevim/views.py:170
+#: bevim/templates/result.html:43 bevim/views.py:174
 msgid "Speed x Time"
 msgstr "Velocidade x Tempo"
 
-#: bevim/templates/stop_experiment_modal.html:13
+#: bevim/templates/show_charts.html:7
+msgid "Experiment Chart"
+msgstr "Gráfico do Ensaio"
+
+#: bevim/templates/show_charts.html:11
+msgid "Job Chart"
+msgstr "Gráfico do Job"
+
+#: bevim/templates/stop_experiment.html:9
 msgid "Processing data"
 msgstr "Processando dados"
+
+#: bevim/templates/timer.html:34
+msgid "Experiment history"
+msgstr "Ensaios"
 
 #: bevim/tests.py:36
 msgid "Experiment time"
@@ -151,19 +168,19 @@ msgstr ""
 msgid "Certifique-se que este valor seja maior ou igual a 0."
 msgstr ""
 
-#: bevim/tests.py:81 bevim/views.py:95
+#: bevim/tests.py:81 bevim/views.py:101
 msgid "The equipment is in use by another user."
 msgstr "A bancada está em uso por outro usuário."
 
-#: bevim/views.py:58
+#: bevim/views.py:64
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:66
+#: bevim/views.py:72
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:302
+#: bevim/views.py:307
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."

@@ -14,20 +14,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 class ExperimentUtils:
 
-    def numerical_integration(y_array, x_array):
-        return integrate.cumtrapz(y_array, x_array)
-
-    def populate_database(experiment):
-        jobs = experiment.job_set.all()
-        if jobs:
-            jobs_ids = []
-            for job in jobs:
-                jobs_ids.append(job.id)
-
-            if jobs_ids:
-                ExperimentUtils.save_data(jobs_ids, "acceleration", Acceleration)
-                ExperimentUtils.save_data(jobs_ids, "frequency", Frequency)
-
     def save_data(experiment_data, data_class):
         first_job = None
         with transaction.atomic():
@@ -58,10 +44,12 @@ class ExperimentUtils:
         amplitudes = []
         frequencies = []
         speeds = []
+        jobs_initial_timestamp = []
 
         for job in jobs:
             job_accelerations = job.acceleration_set.all()
             if job_accelerations:
+                jobs_initial_timestamp.append(str(job_accelerations[0].timestamp))
                 job_amplitudes = job.amplitude_set.all()
                 job_frequencies = job.frequency_set.all()
                 job_speeds = job.speed_set.all()
@@ -75,7 +63,8 @@ class ExperimentUtils:
             'accelerations' : accelerations,
             'amplitudes': amplitudes,
             'frequencies': frequencies,
-            'speeds': speeds
+            'speeds': speeds,
+            'jobs_initial_timestamp': jobs_initial_timestamp
         }
         return result
 

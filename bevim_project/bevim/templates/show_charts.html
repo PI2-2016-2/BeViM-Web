@@ -1,0 +1,14 @@
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% load bootstrap_ui_tags %}
+{% load new_tags %}
+
+<h2>{% trans 'Experiment Chart' %}</h2>
+<div id={{chart_id}}></div>
+{% if jobs_quantity > 1 %}
+    {% for i in jobs_quantity|repeat_until %}
+        <h3> {% trans 'Job Chart' %} {{ i|sum_unity }}</h3>
+        <div id={{chart_id}}_{{i}}></div>
+    {% endfor %}
+{% endif %}

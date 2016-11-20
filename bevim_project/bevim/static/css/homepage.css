@@ -1,0 +1,36 @@
+.experiment_buttons {
+  position: relative;
+  height: 200px;
+  width: 257px;
+}
+
+.button_description {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  width: 160px;
+  padding: 5px;
+  margin: 70px 0 0 0;
+  height: 30px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  float: center;
+  position: absolute;
+  top: 2%;
+  bottom: 0%;
+  left: 20%;
+  right: 50%;
+  background: #fff;
+  color: #111;
+
+  visibility: hidden;
+  opacity: 0;
+}
+
+.experiment_buttons:hover .button_description {
+  visibility: visible;
+  opacity: 1;
+  }
