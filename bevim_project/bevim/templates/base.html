@@ -33,20 +33,21 @@
             {%endif%}
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="{% url 'how_to_use' %}">{% trans 'How to use the equipment' %}</a>
+                </li>
+                 <li>
+                    <a href="{% url 'about' %}">{% trans 'About' %}</a>
+                </li>
                 {% if not user.is_authenticated %}
                     <li>
                         <a href="{% url 'login'%}">{% trans 'Login' %}</a>
                     </li>
                 {% else %}
-                    <li class="dropdown notifications-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                    </a>
-                    </li>
                     <li>
                         <a href="{% url 'logout'%}">{% trans 'Logout' %}</a>
                     </li>
-                {% endif %}
-                
+                {% endif %}                
             </ul>
             {% endblock %}
         </div>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load bootstrap_ui_tags %}
+{% load staticfiles %}
+
+{% block content %}
+<link href="{% static 'css/timeline.css' %}" media="screen" rel="stylesheet" type="text/css">
+
+<section class="timeline">
+  <ul>
+    <li>
+      <div>
+        <time>1º passo:</time>
+        DESCREVER COMO LIGAR OS BREGUETES
+      </div>
+    </li>
+    <li>
+      <div>
+        <time>2º passo:</time>
+        .....
+      </div>
+    </li>
+    <li>
+      <div>
+        <time>3º passo:</time>
+        ....
+      </div>
+    </li>
+    <li>
+      <div>
+        <time>Xº passo:</time>
+        Agora para iniciar o ensaio basta clicar em 'Novo ensaio' e digitar as frequências e tempos desejados e iniciar
+        o ensaio.
+      </div>
+    </li>
+  </ul>
+</section>
+
+{% endblock %}
+

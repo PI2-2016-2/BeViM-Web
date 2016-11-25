@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load bootstrap_ui_tags %}
+{% load staticfiles %}
+
+{% block content %}
+<link href="{% static 'css/about.css' %}" media="screen" rel="stylesheet" type="text/css">
+
+<h2 class="text-center"> <b>{% trans 'About' %}</b> </h2>
+
+A aplicação BEViM foi criada para ser usada com a bancada de ensaio de vibração mecânica da Faculdade do Gama, Universidade de Brasília.
+<br>
+O projeto foi realizado na disciplina de Projeto Integrador II com o intuito de suprir a necessidade desse tipo de equipamento nos cursos de Engenharia Automotiva e Aeroespacial.
+
+
+<h3> <b>{% trans 'Project Team' %}</b> </h3>
+<div class="row">
+
+<div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/andao.jpg" %}" alt="team_member"/>
+  <br><b>Anderson Andrade</b><br>
+  Engenharia de Energia
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/andinho.jpg" %}" alt="team_member"/>
+  <br><b>Anderson Tenório</b><br>
+  Engenharia de Energia
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/bruno.jpg" %}" alt="team_member"/>
+  <br><b>Bruno Fares</b><br>
+  Engenharia Eletrônica
+  </center>
+</div>
+
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/davi.jpg" %}" alt="team_member"/>
+  <br><b>Davi Pires</b><br>
+  Engenharia Automotiva
+  </center>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/douglas.jpg" %}" alt="team_member"/>
+  <br><b>Dougllas Magalhães</b><br>
+  Engenharia Aeroespacial
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/emilie.JPG" %}" alt="team_member"/>
+  <br><b>Emilie Morais</b><br>
+  Engenharia de Software
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/irvylle.jpg" %}" alt="team_member"/>
+  <br><b>Irvylle Mourão</b><br>
+  Engenharia de Energia
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/italo.jpg" %}" alt="team_member"/>
+  <br><b>Italo Paiva</b><br>
+  Engenharia de Software
+  </center>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/joao.jpg" %}" alt="team_member"/>
+  <br><b>João Guimarães</b><br>
+  Engenharia Eletrônica
+  </center>
+</div>
+   <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/kalled.jpg" %}" alt="team_member"/>
+  <br><b>João Kalled</b><br>
+  Engenharia Automotiva
+  </center>
+</div>
+
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/joel.jpg" %}" alt="team_member"/>
+  <br><b>Joel Filho</b><br>
+  Engenharia Aeroespacial
+  </center>
+</div>
+
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/mara.jpg" %}" alt="team_member"/>
+  <br><b>Marayanne Chaves</b><br>
+  Engenharia de Energia
+  </center>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/matheus.jpg" %}" alt="team_member"/>
+  <br><b>Matheus Ferraz</b><br>
+  Engenharia de Software
+  </center>
+</div>
+
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/paulo.jpg" %}" alt="team_member"/>
+  <br><b>Paulo Borba</b><br>
+  Engenharia de Software
+  </center>
+</div>
+  <div class="col-xs-6 col-md-3">
+  <center><img src="{% static "images/pedro.jpg" %}" alt="team_member"/>
+  <br><b>Pedro Inazawa</b><br>
+  Engenharia Eletrônica
+  </center>
+</div>
+</div>
+
+{% endblock %}

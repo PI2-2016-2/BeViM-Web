@@ -40,6 +40,12 @@ def consult_frequency(request):
     response = RestUtils.get_from_rasp_server('v1/consult/current_frequency')
     return HttpResponse(response.content)
 
+def about(request):
+    return render(request, "about.html", {})
+
+def how_to_use(request):
+    return render(request, "how_to_use.html", {})
+
 class HomeView(View):
 
     http_method_names = [u'post', u'get']

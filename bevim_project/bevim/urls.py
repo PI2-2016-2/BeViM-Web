@@ -4,6 +4,10 @@ from bevim import views
 urlpatterns = [
 
     url(r'^register$', views.HomeView.as_view(), name='register'),
+    
+    url(r'^how_to_use$', views.how_to_use, name='how_to_use'),
+
+    url(r'^about$', views.about, name='about'),
 
     url(r'^new_experiment$', views.ExperimentView.as_view(),
         name='new_experiment'),
