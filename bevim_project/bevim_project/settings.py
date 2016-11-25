@@ -136,7 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static'
 
-DJANGO_BOOTSTRAP_UI_THEME = 'bootswatch-cosmo'
+DJANGO_BOOTSTRAP_UI_THEME = 'bootswatch-flatly'
 
 MESSAGE_TAGS = {
     messages.INFO: 'alert-info',
@@ -151,4 +151,5 @@ BOOTSTRAP3 = {
     'horizontal_field_class': 'col-md-5',
 }
 
-REST_BASE_URL="http://192.168.1.30:8001/api/"
+REST_BASE_URL="http://localhost:8001/api/"
+# REST_BASE_URL="http://192.168.1.30:8001/api/"

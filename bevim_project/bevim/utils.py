@@ -18,8 +18,6 @@ class ExperimentUtils:
         first_job = None
         with transaction.atomic():
             for data in experiment_data:
-                if previous_data and data_class is Amplitude:
-                    print (previous_data.z_value)
                 sensor = Sensor.objects.get(name=data[0])
                 job = Job.objects.get(pk=data[5])
                 first_job = job
@@ -76,7 +74,7 @@ class ExperimentUtils:
         for job_data in result_data:
             for data in job_data:
                 timestamps.append(data.timestamp)
-                data_values.append(data.z_value) # Get sensor data from axis z
+                data_values.append(data.x_value) # Get sensor data from axis z
 
         columns = [timestamps, data_values]
         chart_data = {
