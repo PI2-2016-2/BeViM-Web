@@ -91,7 +91,6 @@ class TestViews(TestCase):
         self.assertContains(response, "S1")
 
     def test_if_free_equipment(self):
-        
         experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
         from .utils import ExperimentUtils
         ExperimentUtils.free_equipment(experiment.id)

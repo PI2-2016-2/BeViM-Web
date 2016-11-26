@@ -175,25 +175,39 @@ class ExperimentView(View):
 
     @csrf_exempt
     def experiment_result(self, request=None, experiment_id=None):
+        # Show charts of the first active sensor
+        active_sensors = Experiment.get_active_sensors_by_experiment(experiment_id)
+        sensor_id = active_sensors[0].id
+        experiment_result = ExperimentUtils.get_experiment_result(experiment_id, sensor_id)
+        response = self.render_experiment_result(request, experiment_result, experiment_id, sensor_id)
 
-        experiment_result = ExperimentUtils.get_experiment_result(experiment_id)
-        frequencies_chart_data = ExperimentUtils.get_chart_data(experiment_result['frequencies'], _('Frequency x Time'), '#0080ff')
-        accelerations_chart_data = ExperimentUtils.get_chart_data(experiment_result['accelerations'], _('Acceleration x Time'), '#b30000')
-        amplitudes_chart_data = ExperimentUtils.get_chart_data(experiment_result['amplitudes'], _('Amplitude x Time'), '#ff8000')
-        speeds_chart_data = ExperimentUtils.get_chart_data(experiment_result['speeds'], _('Speed x Time'), '#8000ff')
+        return response
 
+    @csrf_exempt
+    def experiment_result_by_sensor(self, request=None, experiment_id=None, sensor_id=None):
+        experiment_result = ExperimentUtils.get_experiment_result(experiment_id, sensor_id)
+        response = self.render_experiment_result(request, experiment_result, experiment_id, sensor_id)
+
+        return response
+
+    def render_experiment_result(self, request, experiment_result, experiment_id, active_sensor):
         initial_timestamp = json.dumps(experiment_result['jobs_initial_timestamp'])
+        active_sensors = Experiment.get_active_sensors_by_experiment(experiment_id)
+
         context = {
-            'accelerations_chart_data': accelerations_chart_data,
-            'amplitudes_chart_data': amplitudes_chart_data,
-            'frequencies_chart_data': frequencies_chart_data,
-            'speeds_chart_data': speeds_chart_data,
+            'accelerations_chart_data': experiment_result['accelerations_chart_data'],
+            'amplitudes_chart_data': experiment_result['amplitudes_chart_data'],
+            'frequencies_chart_data': experiment_result['frequencies_chart_data'],
+            'speeds_chart_data': experiment_result['speeds_chart_data'],
             'experiment_id': experiment_id,
             'initial_timestamp': initial_timestamp,
-            'jobs_quantity': len(experiment_result['jobs_initial_timestamp'])
+            'jobs_quantity': len(experiment_result['jobs_initial_timestamp']),
+            'active_sensors': active_sensors,
+            'active_sensor': active_sensor
         }
 
         return render(request, "result.html", context)
+
 
     @csrf_exempt
     def process_result(self, request, experiment_id):
@@ -231,8 +245,6 @@ class ExperimentView(View):
 
             amplitudes = ExperimentUtils.process_data(speeds)
             ExperimentUtils.save_data(amplitudes, Amplitude)
-
-            print(accelerations)
 
             # End experiment
             ExperimentUtils.free_equipment(experiment.id)

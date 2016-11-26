@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^receive_result$', views.ExperimentView().receive_result, name='receive_result'),
     
     url(r'^result/(?P<experiment_id>\d+)$', views.ExperimentView().experiment_result, name='experiment_result'),
+
+    url(r'^result/(?P<experiment_id>\d+)/(?P<sensor_id>\d+)$', views.ExperimentView().experiment_result_by_sensor, name='experiment_result_by_sensor'),
     
     url(r'^processing_data/(?P<experiment_id>\d+)$', views.ExperimentView().process_result, name='process_result'),
 

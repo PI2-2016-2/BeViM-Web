@@ -33,8 +33,21 @@
     {{initial_timestamp}}
 </div>
 
-
 <h1><center> {% trans 'Experiment results' %} </center></h1>
+
+
+<div class="dropdown" align="right">
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    {% trans 'Charts of Sensor' %} {{active_sensor}}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+  {% for active_sensor in active_sensors %}
+    <li><a href="{% url 'experiment_result_by_sensor' experiment_id active_sensor.id%}">{% trans 'Charts of Sensor' %}   {{active_sensor.name}}</a></li>
+  {% endfor %}
+  </ul>
+</div>
+
 <ul class="nav nav-tabs">
   <li class="active"><a href="#frequency" data-toggle="tab" aria-expanded="true">{% trans 'Frequency x Time' %}</a></li>
   <li class=""><a href="#acceleration" data-toggle="tab" aria-expanded="false">{% trans 'Acceleration x Time' %}</a></li>
@@ -44,18 +57,17 @@
 </ul>
 <div id="tabs-content" class="tab-content">
     <div class="tab-pane fade active in" id="frequency">
-    {% include "show_charts.html" with jobs_quantity=jobs_quantity chart_id="frequency_chart"%}
+    {% include "show_charts.html" with jobs_quantity=jobs_quantity chart_id="frequency_chart" active_sensor=active_sensor%}
     </div>
     <div class="tab-pane fade" id="acceleration">
-       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="acceleration_chart"%}
-      </div>
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="acceleration_chart" active_sensor=active_sensor%}
+    </div>
       <div class="tab-pane fade" id="speed">
-       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="speed_chart"%}
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="speed_chart" active_sensor=active_sensor%}
       </div>
       <div class="tab-pane fade" id="amplitude">
-       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="amplitude_chart"%}
-      </div>
-
+       {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="amplitude_chart" active_sensor=active_sensor%}
+    </div>
 </div>
 
 {% endblock %}
@@ -65,22 +77,23 @@
 
   <script type="text/javascript">
     $(document).ready(function(){
+      
+      var accelerations_data = $("#accelerations_chart_data").html();
+      accelerations_data = JSON.parse(accelerations_data);
+      
+      var frequencies_data = $("#frequencies_chart_data").html();
+      frequencies_data = JSON.parse(frequencies_data);
 
-      var data = $("#accelerations_chart_data").html();
-      data = JSON.parse(data);
-      showCharts(data, '#acceleration_chart');
+      var amplitudes_data = $("#amplitudes_chart_data").html();
+      amplitudes_data = JSON.parse(amplitudes_data);
 
-      data = $("#frequencies_chart_data").html();
-      data = JSON.parse(data);
-      showCharts(data, '#frequency_chart');
-
-      data = $("#amplitudes_chart_data").html();
-      data = JSON.parse(data);
-      showCharts(data, '#amplitude_chart');
-
-      data = $("#speeds_chart_data").html();
-      data = JSON.parse(data);
-      showCharts(data, '#speed_chart');
+      var speeds_data = $("#speeds_chart_data").html();
+      speeds_data = JSON.parse(speeds_data);
+      
+      showCharts(accelerations_data, '#acceleration_chart');
+      showCharts(frequencies_data, '#frequency_chart');
+      showCharts(amplitudes_data, '#amplitude_chart');
+      showCharts(speeds_data, '#speed_chart');
 
     });
 

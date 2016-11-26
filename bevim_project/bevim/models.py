@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.core import validators
 from django.utils.translation import ugettext_lazy as _
+from itertools import chain
 
 
 class Experiment(models.Model):
@@ -27,6 +28,26 @@ class Experiment(models.Model):
             experiments_with_correct_data.append(experiment)
 
         return experiments_with_correct_data
+
+    @staticmethod
+    def get_active_sensors_by_experiment(experiment_id):
+        experiment = Experiment.objects.get(pk=experiment_id)
+        jobs = experiment.job_set.all()
+        jobs_sensors = []
+        if jobs:
+            for job in jobs:
+                job_sensors = job.acceleration_set.all().values('sensor_id').distinct()
+                jobs_sensors = list(chain(jobs_sensors, job_sensors))
+
+        experiment_sensors = []
+        if jobs_sensors:
+            for job_sensor in jobs_sensors:
+                job_sensor_id = job_sensor['sensor_id']
+                sensor = Sensor.objects.get(pk=job_sensor_id)
+                if not sensor in experiment_sensors:
+                    experiment_sensors.append(sensor) 
+
+        return experiment_sensors
 
 class Job(models.Model):
     choose_frequency = models.PositiveSmallIntegerField(_('Frequency'),

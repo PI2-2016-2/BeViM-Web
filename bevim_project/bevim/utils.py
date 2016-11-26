@@ -3,11 +3,13 @@ from scipy import integrate
 from django.db import connection, IntegrityError, transaction
 import json
 import requests as api_requests
+from itertools import chain
 
 from bevim.models import Experiment, Job, Sensor, Acceleration, Amplitude, Frequency, Speed
 from bevim_project.settings import REST_BASE_URL
 from django.db.models.signals import post_save
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.translation import ugettext as _
 
 
 # Util methods - Controller
@@ -37,7 +39,7 @@ class ExperimentUtils:
         experiment.save()
 
 
-    def get_experiment_result(experiment_id):
+    def get_experiment_result(experiment_id, sensor_id):
         jobs = Job.objects.filter(experiment=experiment_id)
 
         accelerations = []
@@ -49,21 +51,33 @@ class ExperimentUtils:
         for job in jobs:
             job_accelerations = job.acceleration_set.all()
             if job_accelerations:
-                jobs_initial_timestamp.append(str(job_accelerations[0].timestamp))
                 job_amplitudes = job.amplitude_set.all()
                 job_frequencies = job.frequency_set.all()
                 job_speeds = job.speed_set.all()
 
-                accelerations.append(job_accelerations)
-                amplitudes.append(job_amplitudes)
-                frequencies.append(job_frequencies)
-                speeds.append(job_speeds)
+                sensor_accelerations = job_accelerations.filter(sensor_id=sensor_id) 
+                sensor_amplitudes = job_amplitudes.filter(sensor_id=sensor_id)
+                sensor_frequencies = job_frequencies.filter(sensor_id=sensor_id)
+                sensor_speeds = job_speeds.filter(sensor_id=sensor_id)
+
+                if sensor_accelerations:
+                    jobs_initial_timestamp.append(str(sensor_accelerations[0].timestamp))
+                    accelerations = list(chain(accelerations, sensor_accelerations))
+                    amplitudes = list(chain(amplitudes, sensor_amplitudes))
+                    frequencies = list(chain(frequencies, sensor_frequencies))
+                    speeds = list(chain(speeds, sensor_speeds))
+
+        frequencies_chart_data = ExperimentUtils.get_chart_data(frequencies, _('Frequency x Time'), '#0080ff')
+        accelerations_chart_data = ExperimentUtils.get_chart_data(accelerations, _('Acceleration x Time'), '#b30000')
+        amplitudes_chart_data = ExperimentUtils.get_chart_data(amplitudes, _('Amplitude x Time'), '#ff8000')
+        speeds_chart_data = ExperimentUtils.get_chart_data(speeds, _('Speed x Time'), '#8000ff')
+
 
         result = {
-            'accelerations' : accelerations,
-            'amplitudes': amplitudes,
-            'frequencies': frequencies,
-            'speeds': speeds,
+            'accelerations_chart_data' : accelerations_chart_data,
+            'amplitudes_chart_data': amplitudes_chart_data,
+            'frequencies_chart_data': frequencies_chart_data,
+            'speeds_chart_data': speeds_chart_data,
             'jobs_initial_timestamp': jobs_initial_timestamp
         }
         return result
@@ -71,18 +85,20 @@ class ExperimentUtils:
     def get_chart_data(result_data, chart_description, color):
         timestamps = ['x']
         data_values = [chart_description]
-        for job_data in result_data:
-            for data in job_data:
+        if result_data:
+            for data in result_data:
                 timestamps.append(data.timestamp)
                 data_values.append(data.x_value) # Get sensor data from axis z
 
-        columns = [timestamps, data_values]
-        chart_data = {
-            'x' : 'x',
-            'columns': columns,
-            'colors': {chart_description: color}
-            # 'type': 'spline'
-        }
+            columns = [timestamps, data_values]
+            chart_data = {
+                'x' : 'x',
+                'columns': columns,
+                'colors': {chart_description: color}
+                # 'type': 'spline'
+            }
+        else:
+            chart_data = {}
 
         chart_data = json.dumps(chart_data, cls=DjangoJSONEncoder)
         return chart_data
