@@ -141,16 +141,31 @@ class TestViews(TestCase):
 
 class TestUtils(TestCase):
 
-
     def setUp(self):
         self.username = "maria"
         self.password = "maria"
         self.user = User.objects.create_user(username=self.username, password=self.password)
 
         self.experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
+        self.job = Job.objects.create(id=1, choose_frequency=20, job_time=10, experiment=self.experiment)
+        sensor = Sensor.objects.create(id=1, name='1')
 
     def test_if_free_equipment(self):
         ExperimentUtils.free_equipment(self.experiment.id)
 
         experiment_after_free = Experiment.objects.get(pk=self.experiment.id)
         self.assertFalse(experiment_after_free.active)
+
+    def test_save_data_with_accelerations(self):
+        data = [[1, '2.0', '2.0', '2.0', '0.0', 1]]
+        ExperimentUtils.save_data(data, Acceleration)
+
+        accelerations = Acceleration.objects.all()
+        self.assertEqual(str(accelerations[0].x_value), '2.00')
+
+    def test_process_data(self):
+        data = [[1, 2.0, 2.0, 2.0, 0.0, 1]]
+        processed_data = ExperimentUtils.process_data(data)
+        
+        expected_processed_data = [[1, 0.0, 0.0, 0.0, 0.0, 1]]
+        self.assertEqual(processed_data, expected_processed_data)
