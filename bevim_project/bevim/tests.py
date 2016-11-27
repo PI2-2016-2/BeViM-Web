@@ -2,10 +2,14 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-from unittest.mock import patch
-from .forms import JobFormSet
-from .models import Sensor, Job, Experiment
+from django.core.serializers.json import DjangoJSONEncoder
 
+from .forms import JobFormSet
+from .models import Sensor, Job, Experiment, Acceleration
+from .utils import ExperimentUtils
+
+from unittest.mock import patch
+import json
 
 class TestViews(TestCase):
 
@@ -24,10 +28,16 @@ class TestViews(TestCase):
             'form-1-job_time': '20',
         }
         
+        self.experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
+        self.job = Job.objects.create(choose_frequency=20, job_time=10, experiment=self.experiment)
+        sensor = Sensor.objects.create(id=1, name='1')
+        self.acceleration = Acceleration.objects.create(sensor=sensor, x_value='2.0', y_value='2.0', z_value='3.0', 
+                                    timestamp='0.0', job=self.job)
+
+        
     def login(self):
         self.client.login(username=self.username, password=self.password)
         
-
     def test_start_experiment_post(self):
         url_to_test = reverse('new_experiment')
         self.login()
@@ -90,11 +100,57 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, "new_experiment.html")
         self.assertContains(response, "S1")
 
+    def test_if_get_job_times(self):
+        job_2 = Job.objects.create(choose_frequency=20, job_time=30, experiment=self.experiment)
+        self.login()
+        url_to_test = reverse('timer', kwargs={'experiment_id': self.experiment.id})
+        response = self.client.get(url_to_test)
+        expected = "\"total_time\": 40"
+        self.assertIn(expected, response.context['jobs_info'])
+
+    def test_experiment_result(self):
+        url_to_test = reverse('experiment_result', kwargs={'experiment_id': self.experiment.id})
+        response = self.client.get(url_to_test)
+        expected_x_axis = "\"x\", \"0.00\""
+        expected_y_axis = "x Tempo\", \"2.00\""
+        self.assertIn(expected_x_axis, response.context['accelerations_chart_data'])
+        self.assertIn(expected_y_axis, response.context['accelerations_chart_data'])
+
+    def test_process_result_with_not_processed_data(self):
+        url_to_test = reverse('process_result', kwargs={'experiment_id': self.experiment.id})
+        response_post = self.client.post(url_to_test)
+        # If the data was not processed yet the responde is the 'process_result' url 
+        self.assertContains(response_post, url_to_test)
+
+    def test_process_result_with_processed_data(self):
+        url_to_test = reverse('process_result', kwargs={'experiment_id': self.experiment.id})
+
+        self.experiment.active = False
+        self.experiment.save()
+        response_post = self.client.post(url_to_test)
+        # If the data was not processed yet the responde is the 'experiment_result' url 
+        expected_url = reverse('experiment_result', kwargs={'experiment_id': self.experiment.id})
+        self.assertContains(response_post, expected_url)
+
+    def test_show_experiments(self):
+        url_to_test = reverse('experiments')
+        self.login()
+        response = self.client.get(url_to_test)    
+
+        self.assertContains(response, '0001') # Experiment number
+
+class TestUtils(TestCase):
+
+
+    def setUp(self):
+        self.username = "maria"
+        self.password = "maria"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+
+        self.experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
+
     def test_if_free_equipment(self):
-        experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
-        from .utils import ExperimentUtils
-        ExperimentUtils.free_equipment(experiment.id)
+        ExperimentUtils.free_equipment(self.experiment.id)
 
-        experiment_after_free = Experiment.objects.get(pk=experiment.id)
+        experiment_after_free = Experiment.objects.get(pk=self.experiment.id)
         self.assertFalse(experiment_after_free.active)
-
