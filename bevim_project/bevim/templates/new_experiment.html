@@ -56,6 +56,9 @@
         {% url 'load_sensors' %}
     </div>
 
+    <input type="hidden" id="available_sensors"
+           name="available_sensors" value="{{ sensors_active }}" />
+
     {% include "received_sensors_modal.html" with sensors=sensors %}
 
 {% endblock %}
@@ -64,6 +67,15 @@
   {{ block.super }}
     <script>
       $(document).ready(function(){
+
+        var confirmButton = $("#confirm_sensors_btn");
+
+        // Disabling confirm sensors button when there are no sensors present
+        var availableSensors = $("#available_sensors").val();
+        if(availableSensors == "False"){
+            confirmButton.prop('disabled', true);
+        }
+
         $("#start_experiment").click(function(event){
             $("#received_sensors").modal('show');
             event.preventDefault();
@@ -79,9 +91,13 @@
             $("#found_sensors_list").html("");
 
             // Making button icon spin while waiting for connection
-            var buttonContent = $("#reload_sensors_btn").html();
+            var reloadButton = $("#reload_sensors_btn");
+            var buttonContent = reloadButton.html();
             var spinningButtonContent = "<i class='fa fa-refresh fa-spin fa-fw' aria-hidden='true'>";
-            $("#reload_sensors_btn").html(spinningButtonContent);
+            reloadButton.html(spinningButtonContent);
+            reloadButton.prop('disabled', true);
+
+            confirmButton.prop('disabled', true);
 
             var url_post = $("#load_sensors_url").html();
             $.ajax({
@@ -92,9 +108,14 @@
                     var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
                     xhr.setRequestHeader("X-CSRFToken", token);
                 },
-                success: function(data){
-                    $("#reload_sensors_btn").html(buttonContent);
-                    $("#found_sensors_list").html(data);
+                success: function(sensorsStatus){
+                    // Enabling button again
+                    if(sensorsStatus.active){
+                        confirmButton.prop('disabled', false);
+                    }
+                    reloadButton.html(buttonContent);
+                    reloadButton.prop('disabled', false);
+                    $("#found_sensors_list").html(sensorsStatus.html);
                 }
             });
         });

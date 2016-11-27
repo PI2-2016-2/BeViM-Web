@@ -22,6 +22,12 @@
     {% block nav-links %}
     {% endblock %}
 
+    <h1 class="text-center">
+        {% trans 'Table current frequency (Hz):' %}
+        <span id="current_frequency" class="label label-success"></span>
+    </h1>
+    <br>
+
     <div id="experiment_status"></div>
     <div id="status_message"></div>
 
@@ -99,9 +105,8 @@
 
     {% csrf_token %}
 
-    <div id="experiment_id" style="display: none;">
-        {{ experiment_id }}
-    </div>
+    <input type="hidden" id="experiment_id" value="{{ experiment_id }}" />
+
     <div id="stop_experiment_url" style="display: none;">
         {% url 'stop_experiment' experiment_id%}
     </div>
@@ -130,15 +135,22 @@
             elapsedTime.innerHTML =  dateElapsed.getHours() + ":" + dateElapsed.getMinutes()+ ":" + dateElapsed.getSeconds();
         }
 
-        function stopUpdate() {
+        function stopUpdate(forcedStop) {
             var finalTime = document.getElementById("finalTime");
             var finalDate = new Date();
             finalTime.innerHTML = finalDate.getHours() + ":" + finalDate.getMinutes() + ":" + finalDate.getSeconds();
 
             experimentHistory.addEvent(experimentHistory.stopExperimentEvent(finalDate));
-            createAlert("experiment_status", "success", "Experiment is over!", true);
 
-            stopExperiment();
+            if(forcedStop){
+                forcedStop = true;
+                createAlert("experiment_status", "danger", "Experiment stopped due to the table unresponsivity.", true);
+            }else{
+                forcedStop = false;
+                createAlert("experiment_status", "success", "Experiment is over!", true);
+            }
+
+            stopExperiment(forcedStop);
         }
 
         function createTimers(jobsJson, experiment){
@@ -163,11 +175,17 @@
             }
         }
 
+        function showCurrentFrequency(currentFrequency){
+            if(currentFrequency != -1){
+                $("#current_frequency").html(currentFrequency);
+            }
+        }
+
         function consultTableFrequency(){
 
             var url = $("#consult_frequency_url").html();
 
-            var frequency;
+            var response;
 
             $.ajax({
                 type:"GET",
@@ -177,15 +195,38 @@
                     var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
                     xhr.setRequestHeader("X-CSRFToken", token);
                 },
-                success: function(response){
-                    frequency = (JSON.parse(response)).frequency;
+                success: function(data){
+                    response = JSON.parse(data);
+
+                    frequency = response.frequency;
                     console.log("Frequency from RASP ----------------------");
                     console.log(frequency);
+                },
+                error: function(request, status, error){
+                    // Arbitrary invalid frequency
+                    response = {'system_status': false, 'frequency': -2}
                 },
                 async:false
             });
 
-            return frequency;
+            return response;
+        }
+
+        var jobsFrequencyConsults = {};
+
+        function checkTableResponse(job, currentFrequency){
+            if(job in jobsFrequencyConsults){
+                if(currentFrequency in jobsFrequencyConsults[job]){
+                    jobsFrequencyConsults[job][currentFrequency] += 1;
+                }else{
+                    jobsFrequencyConsults[job][currentFrequency] = 0;
+                }
+            }else{
+                jobsFrequencyConsults[job] = {};
+                jobsFrequencyConsults[job][currentFrequency] = 0;
+            }
+
+            return jobsFrequencyConsults[job][currentFrequency];
         }
 
         function transition(experiment){
@@ -199,21 +240,45 @@
             // Fire the job to the next timer
             fireJob(job);
 
-            currentFrequency = consultTableFrequency();
+            var reply = consultTableFrequency();
+            var currentFrequency = reply.frequency;
+            var systemStatus = reply.system_status;
 
-            var jobs = jobsInfo.jobs;
-            var job_data = jobs[job];
-            var job_frequency = job_data.frequency;
+            showCurrentFrequency(currentFrequency);
 
-            if(currentFrequency){
+            var tableResponsesForCurrentFrequency = checkTableResponse(job, currentFrequency)
 
-                createAlert("experiment_status", "info", "Frequency reached, keeping on...", true);
+            var MAX_SUCESSIVE_EQUAL_RESPONSES = 10;
 
-                experimentHistory.addEvent(experimentHistory.unpauseExperimentEvent(job_data));
+            var mustContinueExperiment = tableResponsesForCurrentFrequency < MAX_SUCESSIVE_EQUAL_RESPONSES && systemStatus;
 
-                experiment.continue();
+            if(mustContinueExperiment){
+
+                var jobs = jobsInfo.jobs;
+                var job_data = jobs[job];
+                var job_frequency = job_data.frequency;
+
+                var error = 1;
+                var reachedRightFrequency = (currentFrequency != null)
+                    && (
+                        currentFrequency > (job_frequency - error)
+                        // && currentFrequency < (job_frequency + error)
+                    );
+
+                if(reachedRightFrequency){
+
+                    createAlert("experiment_status", "info", "Frequency reached, keeping on...", true);
+
+                    experimentHistory.addEvent(experimentHistory.unpauseExperimentEvent(job_data));
+
+                    experiment.continue();
+                }else{
+                    setTimeout(transition, 1000, experiment);
+                }
             }else{
-                setTimeout(transition, 500, experiment);
+                experiment.stop(function(){
+                    stopUpdate(true);
+                });
             }
 
         }
@@ -228,8 +293,9 @@
 
         createTimers(jobsInfo.jobs, experiment);
 
-        var dateObject = experiment.start(); // Start the experiment
+        // Start the experiment
         experimentHistory.addEvent(experimentHistory.startExperimentEvent(dateObject));
+        var dateObject = experiment.start();
 
         var hours = dateObject.getHours();
         var minutes = dateObject.getMinutes();
@@ -252,7 +318,7 @@
 
 			//**** Make a request here to the rapsberry server to change the frequency ****//
             var url = $("#change_frequency_url").html();
-			var experiment_id = $("#experiment_id").html();
+			var experiment_id = $("#experiment_id").val();
 			$.ajax({
 				type:"POST",
 				url: url,
@@ -272,18 +338,24 @@
 			});
 		}
 
-		function stopExperiment(){
+		function stopExperiment(forcedStop){
+            if(forcedStop == undefined){
+                forcedStop = false;
+            }
 		  	var url_post = $("#stop_experiment_url").html();
 			$.ajax({
 				type:"POST",
 				url: url_post,
-				data: {},
+				data: {forcedStop: forcedStop},
 			    beforeSend: function(xhr, settings) {
 					var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 		        	xhr.setRequestHeader("X-CSRFToken", token);
 		      	},
 				success: function(response){
-					window.location.href = response;
+
+                    if(!forcedStop){
+                        window.location.href = response;
+                    }
 				}
 			});
 		}

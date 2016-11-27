@@ -88,7 +88,8 @@ class ExperimentUtils:
         if result_data:
             for data in result_data:
                 timestamps.append(data.timestamp)
-                data_values.append(data.x_value) # Get sensor data from axis z
+                # data_values.append(data.x_value) # Get sensor data from axis z
+                data_values.append(data.z_value) # Get sensor data from axis z
 
             columns = [timestamps, data_values]
             chart_data = {
@@ -136,7 +137,7 @@ class ExperimentUtils:
 
 class RestUtils:
 
-    TIMEOUT = 15 # In seconds
+    TIMEOUT = 10 # In seconds
 
     @classmethod
     def post_to_rasp_server(cls, url, data=None, headers=None):
@@ -148,7 +149,7 @@ class RestUtils:
         return response
 
     @classmethod
-    def put_to_rasp_server(cls, url, data, headers=None):
+    def put_to_rasp_server(cls, url, data=None, headers=None):
         url_to_rest = REST_BASE_URL + url
         if headers is None:
             headers = {'content-type': 'application/json'}
@@ -157,7 +158,7 @@ class RestUtils:
         return response
 
     @classmethod
-    def get_from_rasp_server(cls, url):
+    def get_from_rasp_server(cls, url, params=None):
         url_to_rest = REST_BASE_URL + url
-        response = api_requests.get(url_to_rest)
+        response = api_requests.get(url_to_rest, params=params, timeout=cls.TIMEOUT)
         return response

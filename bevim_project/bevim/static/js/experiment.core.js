@@ -82,15 +82,6 @@ Experiment.prototype.start = function(){
         this.startTime = this.startNextTimer();
     }
 
-    // outer = this;
-    // (function(onTransition){
-    //    onTransition = function(){
-    //         onTransition();
-    //    }
-    // })(this.onTransition);
-
-
-
     return this.startTime;
 };
 
@@ -140,8 +131,11 @@ Experiment.prototype.continue = function(){
 };
 
 Experiment.prototype.stop = function(stopFunction){
-    this.currentTimer.cancel();
-    this.onFinish();
+
+    if(!jQuery.isEmptyObject(this.currentTimer)){
+        this.currentTimer.cancel();
+    }
+
     if(stopFunction){
         stopFunction();
     }

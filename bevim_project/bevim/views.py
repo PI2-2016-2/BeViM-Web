@@ -109,9 +109,11 @@ class ExperimentView(View):
                 _('The equipment is in use by another user.'))
         else:
             busy_equipment = False
+        available_sensors = self.get_sensors()
         self.context['formset'] = self.JobFormSet
         self.context['busy_equipment'] = False
-        self.context['sensors'] = self.get_sensors()
+        self.context['sensors'] = available_sensors
+        self.context['sensors_active'] = available_sensors is not None
         return render(request, self.template, self.context)
 
     @method_decorator(login_required)
@@ -160,12 +162,21 @@ class ExperimentView(View):
             'experiment_id': experiment_id,
         }
 
+        # Inform to the server that a new experiment is going to start
+        try:
+            RestUtils.get_from_rasp_server(
+                'v1/control/change_frequency',
+                {'experiment': experiment_id}
+            )
+        except requests.exceptions.ConnectionError as e:
+            print(e)
+
         return render(request, "timer.html", context)
 
     def stop_experiment(self, request, experiment_id):
         if experiment_id:
             # Sending signal to stop experiment on the control system
-            payload = {'flag': protocol.STOP_EXPERIMENT_FLAG}
+            payload = {'experiment': experiment_id, 'forced_stop': request.POST['forcedStop']}
             RestUtils.put_to_rasp_server('v1/control/change_frequency', payload)
             response = HttpResponse(reverse('process_result', kwargs={'experiment_id':experiment_id}))
         else:
@@ -259,10 +270,11 @@ class ExperimentView(View):
             response = RestUtils.post_to_rasp_server('v1/sensor')
         except (requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError):
+
             if request is not None:
                 # sensors = False -> Means that there is no connection to the server
                 html = render_to_string(u'found_sensors_list.html', {'sensors': False})
-                response = HttpResponse(html)
+                response = JsonResponse({'active': False, 'html': html})
             else:
                 response = None
         else:
@@ -278,7 +290,7 @@ class ExperimentView(View):
 
             if request is not None:
                 html = render_to_string(u'found_sensors_list.html', {'sensors': sensors})
-                response = HttpResponse(html)
+                response = JsonResponse({'active': True, 'html': html})
             else:
                 response = sensors
         finally:
