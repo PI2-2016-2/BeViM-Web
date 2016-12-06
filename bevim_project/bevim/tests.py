@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -148,7 +149,7 @@ class TestUtils(TestCase):
 
         self.experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
         self.job = Job.objects.create(id=1, choose_frequency=20, job_time=10, experiment=self.experiment)
-        sensor = Sensor.objects.create(id=1, name='1')
+        self.sensor = Sensor.objects.create(id=1, name='1')
 
     def test_if_free_equipment(self):
         ExperimentUtils.free_equipment(self.experiment.id)
@@ -169,3 +170,19 @@ class TestUtils(TestCase):
         
         expected_processed_data = [[1, 0.0, 0.0, 0.0, 0.0, 1]]
         self.assertEqual(processed_data, expected_processed_data)
+
+    def test_if_get_experiment_result(self):
+
+        acceleration = Acceleration.objects.create(sensor=self.sensor, x_value='2.00', 
+                                                    y_value='2.00', z_value='3.00', 
+                                                    timestamp='0.00', job=self.job)
+
+        expected_result_initial_timestamp = [acceleration.timestamp]
+
+        experiment_result = ExperimentUtils.get_experiment_result(
+                            self.experiment.id, self.sensor.id)
+
+        self.assertIn(str(acceleration.x_value), experiment_result['accelerations_chart_data'])
+        self.assertIn(str(acceleration.timestamp), experiment_result['accelerations_chart_data'])
+        self.assertEqual(experiment_result['jobs_initial_timestamp'], 
+                        expected_result_initial_timestamp)

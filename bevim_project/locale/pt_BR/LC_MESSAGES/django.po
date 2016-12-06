@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-19 22:04-0200\n"
+"POT-Creation-Date: 2016-11-30 22:59-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,13 +35,21 @@ msgstr "Confirmação de Senha"
 msgid "Enter the same password as above for verification."
 msgstr "Digite a mesma senha de cima, para verificação"
 
-#: bevim/models.py:32
+#: bevim/models.py:53
 msgid "Frequency"
 msgstr "Frequência"
 
-#: bevim/models.py:34
+#: bevim/models.py:55
 msgid "Time in seconds"
 msgstr "Tempo em segundos"
+
+#: bevim/templates/about.html:10 bevim/templates/base.html:40
+msgid "About"
+msgstr "Sobre"
+
+#: bevim/templates/about.html:17
+msgid "Project Team"
+msgstr "Equipe do Projeto"
 
 #: bevim/templates/base.html:28 bevim/templates/home.html:36
 msgid "New Experiment"
@@ -51,11 +59,15 @@ msgstr "Novo Ensaio"
 msgid "Experiments"
 msgstr "Ensaios"
 
-#: bevim/templates/base.html:38 bevim/templates/login.html:18
+#: bevim/templates/base.html:37
+msgid "How to use the equipment"
+msgstr "Como usar a bancada"
+
+#: bevim/templates/base.html:44 bevim/templates/login.html:18
 msgid "Login"
 msgstr "Entrar"
 
-#: bevim/templates/base.html:46
+#: bevim/templates/base.html:48
 msgid "Logout"
 msgstr "Sair"
 
@@ -82,6 +94,10 @@ msgstr ""
 #: bevim/templates/home.html:20
 msgid "Register"
 msgstr "Cadastrar"
+
+#: bevim/templates/how_to_use.html:10
+msgid "Use instructions"
+msgstr "Instruções de Uso"
 
 #: bevim/templates/login.html:25
 msgid "Lost password"
@@ -115,33 +131,35 @@ msgstr "Atualizar"
 msgid "CONFIRM SENSORS"
 msgstr "Confirmar sensores"
 
-#: bevim/templates/result.html:32
+#: bevim/templates/result.html:36
 #, fuzzy
 msgid "Experiment results"
 msgstr "Gráficos"
 
-#: bevim/templates/result.html:38
-msgid "Charts"
-msgstr "Gráficos"
+#: bevim/templates/result.html:41 bevim/templates/result.html:46
+msgid "Charts of Sensor"
+msgstr "Gráficos do Sensor"
 
-#: bevim/templates/result.html:40 bevim/views.py:171
+#: bevim/templates/result.html:52 bevim/utils.py:70
 msgid "Frequency x Time"
 msgstr "Frequência x Tempo"
 
-#: bevim/templates/result.html:41 bevim/views.py:172
+#: bevim/templates/result.html:53 bevim/utils.py:71
 msgid "Acceleration x Time"
 msgstr "Aceleração x Tempo"
 
-#: bevim/templates/result.html:42 bevim/views.py:173
+#: bevim/templates/result.html:54 bevim/utils.py:72
 msgid "Amplitude x Time"
 msgstr "Amplitude x Tempo"
 
-#: bevim/templates/result.html:43 bevim/views.py:174
+#: bevim/templates/result.html:55 bevim/utils.py:73
 msgid "Speed x Time"
 msgstr "Velocidade x Tempo"
 
 #: bevim/templates/show_charts.html:7
-msgid "Experiment Chart"
+#, fuzzy
+#| msgid "Experiment Chart"
+msgid "Experiment Chart of Sensor "
 msgstr "Gráfico do Ensaio"
 
 #: bevim/templates/show_charts.html:11
@@ -156,37 +174,40 @@ msgstr "Processando dados"
 msgid "Experiment history"
 msgstr "Ensaios"
 
-#: bevim/tests.py:36
+#: bevim/tests.py:46
 msgid "Experiment time"
 msgstr "Tempo do Ensaio"
 
-#: bevim/tests.py:46
+#: bevim/tests.py:56
 msgid "Certifique-se que este valor seja menor ou igual a 100."
 msgstr ""
 
-#: bevim/tests.py:57
+#: bevim/tests.py:67
 msgid "Certifique-se que este valor seja maior ou igual a 0."
 msgstr ""
 
-#: bevim/tests.py:81 bevim/views.py:101
+#: bevim/tests.py:91 bevim/views.py:109
 msgid "The equipment is in use by another user."
 msgstr "A bancada está em uso por outro usuário."
 
-#: bevim/views.py:64
+#: bevim/views.py:70
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:72
+#: bevim/views.py:78
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:307
+#: bevim/views.py:339
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."
 msgstr ""
 "Não é possível iniciar um ensaio sem uma frequência e um tempo. Por favor, "
 "preencha os campos."
+
+#~ msgid "Charts"
+#~ msgstr "Gráficos"
 
 #~ msgid "Job Time"
 #~ msgstr "Tempo"

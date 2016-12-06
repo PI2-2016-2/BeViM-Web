@@ -7,35 +7,69 @@
 {% block content %}
 <link href="{% static 'css/timeline.css' %}" media="screen" rel="stylesheet" type="text/css">
 
+<h1 class="text-center">{% trans 'Use instructions' %}</h1>
+
+<div class="row">
+
+  <div class="col-xs-6 col-md-3">
+
+    <div class="alert alert-warning" role="alert">
+      <i class="fa fa-warning"></i>
+      <b>Atenção:</b> O peso máximo suportado é de <b>20kg</b>. <br>
+    </div>
+    <div class="alert alert-warning" role="alert">
+      <i class="fa fa-warning"></i>
+      <b>Atenção:</b> A frequência máxima suportada é de <b>100Hz</b>.
+    </div>
+    <br>
+  </div>
+<div class="col-xs-6 col-md-6">
+<br>
 <section class="timeline">
   <ul>
     <li>
       <div>
-        <time>1º passo:</time>
-        DESCREVER COMO LIGAR OS BREGUETES
+        <time><b>1º passo:</b></time>
+        Conecte o motor no inversor através da tomada de 4 pinos.
       </div>
     </li>
     <li>
       <div>
-        <time>2º passo:</time>
-        .....
+        <time><b>2º passo:</b></time>
+        Conecte o inversor na tomada trifásica de 5 pinos.  
+        <p class="text-warning"><i class="fa fa-warning"> Certifique-se que a tomada esteja  ligada.</i> </p>
+        
       </div>
     </li>
     <li>
       <div>
-        <time>3º passo:</time>
-        ....
+        <time><b>3º passo:</b></time>
+        Na caixa de comando que se encontra no púlpito ligue os disjuntores.
       </div>
     </li>
     <li>
       <div>
-        <time>Xº passo:</time>
-        Agora para iniciar o ensaio basta clicar em 'Novo ensaio' e digitar as frequências e tempos desejados e iniciar
-        o ensaio.
+        <time><b>4º passo:</b></time>
+        No púlpito aperte o botão <span style="color: #33cc33"><b>verde</b></span>.
+      </div>
+    </li>
+    <li>
+      <div>
+        <time><b>5º passo:</b></time>
+        Agora que a bancada já está ligada, basta clicar em <b>'Novo ensaio'</b> no menu superior e digitar as frequências e tempos desejados e clicar em <b>'Iniciar o ensaio'</b>.
+      </div>
+    </li>
+    <li>
+      <div>
+        <time><b>A bancada está pronta para usar!!</b></time>
+        <p class="text-danger"><i class="fa fa-warning"> Caso algum ocorra algum problema que necessite parar o ensaio de imediato,
+        aperte o botão <b>vermelho</b> na <b>lateral</b> do púlpito.</i> </p>
       </div>
     </li>
   </ul>
 </section>
+</div>
 
+</div>
 {% endblock %}
 

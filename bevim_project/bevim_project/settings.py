@@ -86,8 +86,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bevim-web',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '',
     }
@@ -151,5 +151,4 @@ BOOTSTRAP3 = {
     'horizontal_field_class': 'col-md-5',
 }
 
-REST_BASE_URL="http://localhost:8001/api/"
-# REST_BASE_URL="http://192.168.1.30:8001/api/"
+REST_BASE_URL="http://192.168.1.30:8001/api/"
