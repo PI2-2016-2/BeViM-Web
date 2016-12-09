@@ -21,8 +21,12 @@
     {{amplitudes_chart_data}}
 </div>
 
-<div id="frequencies_chart_data" style="display: none;">
-    {{frequencies_chart_data}}
+<div id="frequencies_real_chart_data" style="display: none;">
+    {{frequencies_chart_real_data}}
+</div>
+
+<div id="frequencies_ideal_chart_data" style="display: none;">
+    {{frequencies_chart_ideal_data}}
 </div>
 
 <div id="speeds_chart_data" style="display: none;">
@@ -57,7 +61,10 @@
 </ul>
 <div id="tabs-content" class="tab-content">
     <div class="tab-pane fade active in" id="frequency">
-    {% include "show_charts.html" with jobs_quantity=jobs_quantity chart_id="frequency_chart" active_sensor=active_sensor%}
+      <h3> Ideal Chart </h3>
+      <div id="frequency_ideal_chart"></div>
+      <h3> Real Chart </h3>
+      <div id="frequency_real_chart"></div>
     </div>
     <div class="tab-pane fade" id="acceleration">
        {% include "show_charts.html" with jobs_quantity=jobs_quantity  chart_id="acceleration_chart" active_sensor=active_sensor%}
@@ -81,8 +88,11 @@
       var accelerations_data = $("#accelerations_chart_data").html();
       accelerations_data = JSON.parse(accelerations_data);
 
-      var frequencies_data = $("#frequencies_chart_data").html();
-      frequencies_data = JSON.parse(frequencies_data);
+      var frequencies_ideal_data = $("#frequencies_ideal_chart_data").html();
+      frequencies_ideal_data = JSON.parse(frequencies_ideal_data);
+
+      var frequencies_real_data = $("#frequencies_real_chart_data").html();
+      frequencies_real_data = JSON.parse(frequencies_real_data);
 
       var amplitudes_data = $("#amplitudes_chart_data").html();
       amplitudes_data = JSON.parse(amplitudes_data);
@@ -93,7 +103,8 @@
       showCharts(accelerations_data, '#acceleration_chart');
       showCharts(amplitudes_data, '#amplitude_chart');
       showCharts(speeds_data, '#speed_chart');
-      showCharts(frequencies_data, '#frequency_chart');
+      showCharts(frequencies_ideal_data, '#frequency_ideal_chart');
+      showCharts(frequencies_real_data, '#frequency_real_chart');
 
     });
 
@@ -103,11 +114,13 @@
           data: data,
         });
 
-        var initialTimestamps = $("#initial_timestamps").html();
-        initialTimestamps = JSON.parse(initialTimestamps);
-        var jobsQuantity = initialTimestamps.length;
-        if (jobsQuantity > 1){
-            showJobsCharts(data, bindTo, initialTimestamps, jobsQuantity);
+        if (!bindTo.includes("#frequency")){
+          var initialTimestamps = $("#initial_timestamps").html();
+          initialTimestamps = JSON.parse(initialTimestamps);
+          var jobsQuantity = initialTimestamps.length;
+          if (jobsQuantity > 1){
+              showJobsCharts(data, bindTo, initialTimestamps, jobsQuantity);
+          }
         }
     }
 

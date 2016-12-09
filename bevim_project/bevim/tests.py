@@ -4,10 +4,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
 
 from .forms import JobFormSet
 from .models import Sensor, Job, Experiment, Acceleration
-from .utils import ExperimentUtils
+from .utils import ExperimentUtils, RestUtils
 
 from unittest.mock import patch
 import json
@@ -32,8 +33,8 @@ class TestViews(TestCase):
         self.experiment = Experiment.objects.create(id=1, number=1, user=self.user, active=True)
         self.job = Job.objects.create(choose_frequency=20, job_time=10, experiment=self.experiment)
         sensor = Sensor.objects.create(id=1, name='1')
-        self.acceleration = Acceleration.objects.create(sensor=sensor, x_value='2.0', y_value='2.0', z_value='3.0', 
-                                    timestamp='0.0', job=self.job)
+        self.acceleration = Acceleration.objects.create(sensor=sensor, x_value='2.00', y_value='2.00', z_value='3.00', 
+                                    timestamp='0.00', job=self.job)
 
         
     def login(self):
@@ -100,8 +101,10 @@ class TestViews(TestCase):
         response = self.client.get(url_to_test)
         self.assertTemplateUsed(response, "new_experiment.html")
         self.assertContains(response, "S1")
-
-    def test_if_get_job_times(self):
+   
+    @patch('bevim.utils.RestUtils.get_from_rasp_server',
+           return_value=HttpResponse(status=200))
+    def test_if_get_job_times(self, rest_response):
         job_2 = Job.objects.create(choose_frequency=20, job_time=30, experiment=self.experiment)
         self.login()
         url_to_test = reverse('timer', kwargs={'experiment_id': self.experiment.id})
@@ -113,7 +116,7 @@ class TestViews(TestCase):
         url_to_test = reverse('experiment_result', kwargs={'experiment_id': self.experiment.id})
         response = self.client.get(url_to_test)
         expected_x_axis = "\"x\", \"0.00\""
-        expected_y_axis = "x Tempo\", \"2.00\""
+        expected_y_axis = "x Tempo\", \"3.00\""
         self.assertIn(expected_x_axis, response.context['accelerations_chart_data'])
         self.assertIn(expected_y_axis, response.context['accelerations_chart_data'])
 
@@ -182,7 +185,7 @@ class TestUtils(TestCase):
         experiment_result = ExperimentUtils.get_experiment_result(
                             self.experiment.id, self.sensor.id)
 
-        self.assertIn(str(acceleration.x_value), experiment_result['accelerations_chart_data'])
+        self.assertIn(str(acceleration.z_value), experiment_result['accelerations_chart_data'])
         self.assertIn(str(acceleration.timestamp), experiment_result['accelerations_chart_data'])
         self.assertEqual(experiment_result['jobs_initial_timestamp'], 
                         expected_result_initial_timestamp)

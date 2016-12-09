@@ -17,7 +17,6 @@ import requests
 
 from bevim.forms import UserForm, JobForm
 from bevim.models import Experiment, Job, Sensor, Acceleration, Speed, Amplitude
-from bevim import tasks
 from bevim.utils import ExperimentUtils, RestUtils
 from bevim import protocol
 
@@ -206,10 +205,13 @@ class ExperimentView(View):
         initial_timestamp = json.dumps(experiment_result['jobs_initial_timestamp'])
         active_sensors = Experiment.get_active_sensors_by_experiment(experiment_id)
 
+        frequency_chart_data = ExperimentUtils.get_frequency_charts(experiment_id)
         context = {
             'accelerations_chart_data': experiment_result['accelerations_chart_data'],
             'amplitudes_chart_data': experiment_result['amplitudes_chart_data'],
-            'frequencies_chart_data': experiment_result['frequencies_chart_data'],
+            # 'frequencies_chart_data': experiment_result['frequencies_chart_data'],
+            'frequencies_chart_real_data': frequency_chart_data['real_data'],
+            'frequencies_chart_ideal_data': frequency_chart_data['ideal_data'],
             'speeds_chart_data': experiment_result['speeds_chart_data'],
             'experiment_id': experiment_id,
             'initial_timestamp': initial_timestamp,

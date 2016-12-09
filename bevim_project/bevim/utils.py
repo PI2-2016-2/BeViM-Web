@@ -61,22 +61,18 @@ class ExperimentUtils:
             job_accelerations = job.acceleration_set.all()
             if job_accelerations:
                 job_amplitudes = job.amplitude_set.all()
-                job_frequencies = job.frequency_set.all()
                 job_speeds = job.speed_set.all()
 
                 sensor_accelerations = job_accelerations.filter(sensor_id=sensor_id)
                 sensor_amplitudes = job_amplitudes.filter(sensor_id=sensor_id)
-                sensor_frequencies = job_frequencies.filter(sensor_id=sensor_id)
                 sensor_speeds = job_speeds.filter(sensor_id=sensor_id)
 
                 if sensor_accelerations:
                     jobs_initial_timestamp.append(str(sensor_accelerations[0].timestamp))
                     accelerations = list(chain(accelerations, sensor_accelerations))
                     amplitudes = list(chain(amplitudes, sensor_amplitudes))
-                    frequencies = list(chain(frequencies, sensor_frequencies))
                     speeds = list(chain(speeds, sensor_speeds))
 
-        frequencies_chart_data = ExperimentUtils.get_chart_data(frequencies, _('Frequency x Time'), '#0080ff')
         accelerations_chart_data = ExperimentUtils.get_chart_data(accelerations, _('Acceleration x Time'), '#b30000')
         amplitudes_chart_data = ExperimentUtils.get_chart_data(amplitudes, _('Amplitude x Time'), '#ff8000')
         speeds_chart_data = ExperimentUtils.get_chart_data(speeds, _('Speed x Time'), '#8000ff')
@@ -85,7 +81,6 @@ class ExperimentUtils:
         result = {
             'accelerations_chart_data' : accelerations_chart_data,
             'amplitudes_chart_data': amplitudes_chart_data,
-            'frequencies_chart_data': frequencies_chart_data,
             'speeds_chart_data': speeds_chart_data,
             'jobs_initial_timestamp': jobs_initial_timestamp
         }
@@ -100,16 +95,20 @@ class ExperimentUtils:
                 # data_values.append(data.x_value) # Get sensor data from axis z
                 data_values.append(data.z_value) # Get sensor data from axis z
 
-            columns = [timestamps, data_values]
+        columns = [timestamps, data_values]
+        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, color) 
+        return chart_data
+
+    def get_dict_chart(columns, chart_description, color):
+        if columns:
             chart_data = {
                 'x' : 'x',
                 'columns': columns,
                 'colors': {chart_description: color}
-                # 'type': 'spline'
             }
         else:
             chart_data = {}
-
+        
         chart_data = json.dumps(chart_data, cls=DjangoJSONEncoder)
         return chart_data
 
@@ -143,6 +142,48 @@ class ExperimentUtils:
             i += 1
 
         return data_processed
+
+    def get_frequency_charts(experiment_id):
+        experiment = Experiment.objects.get(pk=experiment_id)
+
+        ideal_data = ExperimentUtils.get_frequency_ideal_data(experiment)
+        real_data = ExperimentUtils.get_frequency_real_data(experiment)
+        
+        frequency_charts = {'ideal_data': ideal_data, 'real_data': real_data}
+        return frequency_charts 
+
+    def get_frequency_ideal_data(experiment):
+        jobs = experiment.job_set.all()
+        timestamps = ['x']
+        chart_description = _('Frequency x Time')
+        frequency_values = [chart_description]
+        current_timestamp = 0
+        if jobs:
+            for job in jobs:
+                current_timestamp += job.job_time
+                timestamps.append(str(current_timestamp))
+                frequency_values.append(str(job.choose_frequency))
+
+        columns = [timestamps, frequency_values]
+        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, "#0080ff") 
+        return chart_data
+
+    def get_frequency_real_data(experiment):
+        frequencies = experiment.experimentfrequency_set.all()
+        timestamps = ['x']
+        chart_description = _('Frequency x Time')
+        frequency_values = [chart_description]
+        if frequencies:
+            for frequency in frequencies:
+                timestamps.append(str(frequency.timestamp))
+                frequency_values.append(str(frequency.frequency))
+
+        columns = [timestamps, frequency_values]
+        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, "#0080ff") 
+        return chart_data
+
+
+
 
 class RestUtils:
 
