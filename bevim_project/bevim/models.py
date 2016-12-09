@@ -45,7 +45,7 @@ class Experiment(models.Model):
                 job_sensor_id = job_sensor['sensor_id']
                 sensor = Sensor.objects.get(pk=job_sensor_id)
                 if not sensor in experiment_sensors:
-                    experiment_sensors.append(sensor) 
+                    experiment_sensors.append(sensor)
 
         return experiment_sensors
 
@@ -77,12 +77,18 @@ class Sensor(models.Model):
         return self.name
 
 
+class ExperimentFrequency(models.Model):
+    experiment = models.ForeignKey(Experiment, verbose_name='Experiment')
+    frequency = models.IntegerField()
+    timestamp = models.IntegerField()
+
+
 class Data(models.Model):
     sensor = models.ForeignKey(Sensor, verbose_name='Sensor')
     x_value = models.DecimalField(max_digits=30, decimal_places=2)
     y_value = models.DecimalField(max_digits=30, decimal_places=2)
     z_value = models.DecimalField(max_digits=30, decimal_places=2)
-    timestamp = models.DecimalField(max_digits=17, decimal_places=2 )
+    timestamp = models.DecimalField(max_digits=17, decimal_places=2)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
     class Meta:
