@@ -96,15 +96,16 @@ class ExperimentUtils:
                 data_values.append(data.z_value) # Get sensor data from axis z
 
         columns = [timestamps, data_values]
-        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, color) 
+        colors = {chart_description: color}
+        chart_data = ExperimentUtils.get_dict_chart(columns, colors) 
         return chart_data
 
-    def get_dict_chart(columns, chart_description, color):
+    def get_dict_chart(columns, colors):
         if columns:
             chart_data = {
                 'x' : 'x',
                 'columns': columns,
-                'colors': {chart_description: color}
+                'colors': colors
             }
         else:
             chart_data = {}
@@ -146,41 +147,68 @@ class ExperimentUtils:
     def get_frequency_charts(experiment_id):
         experiment = Experiment.objects.get(pk=experiment_id)
 
-        ideal_data = ExperimentUtils.get_frequency_ideal_data(experiment)
         real_data = ExperimentUtils.get_frequency_real_data(experiment)
+        ideal_data = ExperimentUtils.get_frequency_ideal_data(experiment, real_data['timestamps'])
         
-        frequency_charts = {'ideal_data': ideal_data, 'real_data': real_data}
-        return frequency_charts 
+        columns = [real_data['timestamps'], real_data['frequency_real_values'], ideal_data['frequency_ideal_values']]
+        colors = {real_data['chart_description']: "#0080ff", ideal_data['chart_description']: "#ff8000"}
+        chart_data = ExperimentUtils.get_dict_chart(columns, colors) 
+        
+        return chart_data 
 
-    def get_frequency_ideal_data(experiment):
+    def get_frequency_ideal_data(experiment, real_timestamps):
         jobs = experiment.job_set.all()
         timestamps = ['x']
-        chart_description = _('Frequency x Time')
+        chart_description = _('Ideal Frequency x Time')
         frequency_values = [chart_description]
+        previous_timestamp = 0
         current_timestamp = 0
         if jobs:
             for job in jobs:
-                current_timestamp += job.job_time
-                timestamps.append(str(current_timestamp))
-                frequency_values.append(str(job.choose_frequency))
+                previous_timestamp = current_timestamp
+                current_timestamp += (job.job_time * 1000)
+                timestamps_to_add = ExperimentUtils.get_timestamps_to_add(
+                                                                        real_timestamps[1:], 
+                                                                        previous_timestamp, current_timestamp)
+                for timestamp in timestamps_to_add:
+                    frequency_values.append(str(job.choose_frequency))
 
-        columns = [timestamps, frequency_values]
-        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, "#0080ff") 
-        return chart_data
+        data = {
+            'chart_description': chart_description,
+            'frequency_ideal_values': frequency_values
+        }
+        return data
+
+    def get_timestamps_to_add(real_timestamps, previous_timestamp, current_timestamp):
+        timestamps_to_add = []
+        for timestamp in real_timestamps:
+            timestamp = int(timestamp)
+            if (previous_timestamp != 0):
+                previous_timestamp_criteria = timestamp > previous_timestamp 
+            else:
+                previous_timestamp_criteria = timestamp >= previous_timestamp 
+
+            if previous_timestamp_criteria and timestamp <= current_timestamp:
+                timestamps_to_add.append(timestamp)
+
+        return timestamps_to_add
 
     def get_frequency_real_data(experiment):
-        frequencies = experiment.experimentfrequency_set.all()
+        frequencies = experiment.experimentfrequency_set.all().order_by('timestamp')
         timestamps = ['x']
-        chart_description = _('Frequency x Time')
+        chart_description = _('Real Frequency x Time')
         frequency_values = [chart_description]
         if frequencies:
             for frequency in frequencies:
                 timestamps.append(str(frequency.timestamp))
                 frequency_values.append(str(frequency.frequency))
 
-        columns = [timestamps, frequency_values]
-        chart_data = ExperimentUtils.get_dict_chart(columns, chart_description, "#0080ff") 
-        return chart_data
+        data = {
+            'timestamps': timestamps,
+            'frequency_real_values': frequency_values,
+            'chart_description': chart_description
+        } 
+        return data
 
 
 

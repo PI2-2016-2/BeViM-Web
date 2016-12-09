@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 22:59-0200\n"
+"POT-Creation-Date: 2016-12-09 13:03-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,7 +132,6 @@ msgid "CONFIRM SENSORS"
 msgstr "Confirmar sensores"
 
 #: bevim/templates/result.html:36
-#, fuzzy
 msgid "Experiment results"
 msgstr "Gráficos"
 
@@ -140,25 +139,23 @@ msgstr "Gráficos"
 msgid "Charts of Sensor"
 msgstr "Gráficos do Sensor"
 
-#: bevim/templates/result.html:52 bevim/utils.py:70
+#: bevim/templates/result.html:52
 msgid "Frequency x Time"
 msgstr "Frequência x Tempo"
 
-#: bevim/templates/result.html:53 bevim/utils.py:71
+#: bevim/templates/result.html:53 bevim/utils.py:76
 msgid "Acceleration x Time"
 msgstr "Aceleração x Tempo"
 
-#: bevim/templates/result.html:54 bevim/utils.py:72
-msgid "Amplitude x Time"
-msgstr "Amplitude x Tempo"
-
-#: bevim/templates/result.html:55 bevim/utils.py:73
+#: bevim/templates/result.html:54 bevim/utils.py:78
 msgid "Speed x Time"
 msgstr "Velocidade x Tempo"
 
+#: bevim/templates/result.html:55 bevim/utils.py:77
+msgid "Amplitude x Time"
+msgstr "Amplitude x Tempo"
+
 #: bevim/templates/show_charts.html:7
-#, fuzzy
-#| msgid "Experiment Chart"
 msgid "Experiment Chart of Sensor "
 msgstr "Gráfico do Ensaio"
 
@@ -170,35 +167,48 @@ msgstr "Gráfico do Job"
 msgid "Processing data"
 msgstr "Processando dados"
 
-#: bevim/templates/timer.html:34
+#: bevim/templates/timer.html:26
+msgid "Table current frequency (Hz):"
+msgstr "Frequência atual da bancada (Hz)"
+
+#: bevim/templates/timer.html:40
 msgid "Experiment history"
 msgstr "Ensaios"
 
-#: bevim/tests.py:46
+#: bevim/tests.py:48
 msgid "Experiment time"
 msgstr "Tempo do Ensaio"
 
-#: bevim/tests.py:56
+#: bevim/tests.py:58
 msgid "Certifique-se que este valor seja menor ou igual a 100."
 msgstr ""
 
-#: bevim/tests.py:67
+#: bevim/tests.py:69
 msgid "Certifique-se que este valor seja maior ou igual a 0."
 msgstr ""
 
-#: bevim/tests.py:91 bevim/views.py:109
+#: bevim/tests.py:93 bevim/views.py:108
 msgid "The equipment is in use by another user."
 msgstr "A bancada está em uso por outro usuário."
 
-#: bevim/views.py:70
+#: bevim/utils.py:162
+#| msgid "Frequency x Time"
+msgid "Ideal Frequency x Time"
+msgstr "Frequência Ideal x Tempo"
+
+#: bevim/utils.py:199
+msgid "Real Frequency x Time"
+msgstr "Frequência Real x Tempo"
+
+#: bevim/views.py:69
 msgid "Successfully registered!"
 msgstr "Cadastrado com sucesso!"
 
-#: bevim/views.py:78
+#: bevim/views.py:77
 msgid "Could not perform the registration! Try again."
 msgstr "Não foi possível realizar o cadastro! Tente novamente."
 
-#: bevim/views.py:339
+#: bevim/views.py:358
 msgid ""
 "It is not possible start an experiment without one frequency and one time. "
 "Please fill the fields."

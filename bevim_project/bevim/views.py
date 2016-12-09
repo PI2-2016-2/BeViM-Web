@@ -99,17 +99,18 @@ class ExperimentView(View):
     @method_decorator(login_required)
     def get(self, request):
         # Checking if has a user using the equipment
-        active_experiment = Experiment.objects.filter(active=True)
-        if active_experiment:
-            busy_equipment = True
-            messages.add_message(
-                request,
-                messages.ERROR,
-                _('The equipment is in use by another user.'))
-        else:
-            busy_equipment = False
+        # active_experiment = Experiment.objects.filter(active=True)
+        # if active_experiment:
+        #     busy_equipment = True
+        #     messages.add_message(
+        #         request,
+        #         messages.ERROR,
+        #         _('The equipment is in use by another user.'))
+        # else:
+        #     busy_equipment = False
         available_sensors = self.get_sensors()
         self.context['formset'] = self.JobFormSet
+        # self.context['busy_equipment'] = busy_equipment
         self.context['busy_equipment'] = False
         self.context['sensors'] = available_sensors
         self.context['sensors_active'] = available_sensors is not None
@@ -210,8 +211,7 @@ class ExperimentView(View):
             'accelerations_chart_data': experiment_result['accelerations_chart_data'],
             'amplitudes_chart_data': experiment_result['amplitudes_chart_data'],
             # 'frequencies_chart_data': experiment_result['frequencies_chart_data'],
-            'frequencies_chart_real_data': frequency_chart_data['real_data'],
-            'frequencies_chart_ideal_data': frequency_chart_data['ideal_data'],
+            'frequencies_chart_data': frequency_chart_data,
             'speeds_chart_data': experiment_result['speeds_chart_data'],
             'experiment_id': experiment_id,
             'initial_timestamp': initial_timestamp,
