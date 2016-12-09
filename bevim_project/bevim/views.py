@@ -151,6 +151,7 @@ class ExperimentView(View):
                 i += 1
 
             dict_jobs = {
+                'experiment_id': experiment_id,
                 'jobs': jobs_info,
                 'total_time': total_time
             }
@@ -248,8 +249,12 @@ class ExperimentView(View):
         response = HttpResponseBadRequest()
         if request.body:
             # Get data
-            accelerations = json.loads(request.body.decode('utf8'))
+            data = json.loads(request.body.decode('utf8'))
+
+            accelerations = data['sensors']
             experiment = ExperimentUtils.save_data(accelerations, Acceleration)
+
+            ExperimentUtils.save_frequency(data['frequencies'], experiment)
 
             speeds = ExperimentUtils.process_data(accelerations)
             ExperimentUtils.save_data(speeds, Speed)

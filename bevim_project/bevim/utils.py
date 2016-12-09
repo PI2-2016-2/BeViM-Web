@@ -5,7 +5,7 @@ import json
 import requests as api_requests
 from itertools import chain
 
-from bevim.models import Experiment, Job, Sensor, Acceleration, Amplitude, Frequency, Speed
+from bevim.models import Experiment, Job, Sensor, Acceleration, Amplitude, Frequency, Speed, ExperimentFrequency
 from bevim_project.settings import REST_BASE_URL
 from django.db.models.signals import post_save
 from django.core.serializers.json import DjangoJSONEncoder
@@ -15,6 +15,15 @@ from django.utils.translation import ugettext as _
 # Util methods - Controller
 
 class ExperimentUtils:
+
+    def save_frequency(frequencies, experiment):
+        with transaction.atomic():
+            for timestamp, frequency in frequencies.items():
+                ExperimentFrequency.objects.create(
+                    experiment=experiment,
+                    frequency=frequency,
+                    timestamp=timestamp
+                )
 
     def save_data(experiment_data, data_class):
         first_job = None
@@ -55,7 +64,7 @@ class ExperimentUtils:
                 job_frequencies = job.frequency_set.all()
                 job_speeds = job.speed_set.all()
 
-                sensor_accelerations = job_accelerations.filter(sensor_id=sensor_id) 
+                sensor_accelerations = job_accelerations.filter(sensor_id=sensor_id)
                 sensor_amplitudes = job_amplitudes.filter(sensor_id=sensor_id)
                 sensor_frequencies = job_frequencies.filter(sensor_id=sensor_id)
                 sensor_speeds = job_speeds.filter(sensor_id=sensor_id)
